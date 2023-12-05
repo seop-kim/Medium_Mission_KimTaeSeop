@@ -4,8 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class MediumMissonKimTaeSeopApplication {
+public class MediumMissionKimTaeSeopApplication {
     public static void main(String[] args) {
-        SpringApplication.run(MediumMissonKimTaeSeopApplication.class, args);
+        SpringApplication.run(MediumMissionKimTaeSeopApplication.class, args);
     }
 }

@@ -51,7 +51,7 @@
 
 
 ### 2. 레포지터리는 아래의 규칙에 따라 생성해주세요.
-- 이름 : **Medium_Misson_OOO**
+- 이름 : **Medium_Mission_OOO**
 - 공개 범위 : **Public**  
 
 
