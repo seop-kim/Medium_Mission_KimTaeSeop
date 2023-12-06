@@ -1,5 +1,6 @@
 package com.ll.medium.member.entity;
 
+import com.ll.medium.member.role.MemberRole;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,16 +20,23 @@ public class Member {
     private Long id;
 
     @Column(unique = true)
-    private String nickName;
+    private String nickname;
 
-    private String userName;
+    private String username;
 
     private String password;
 
+    private MemberRole memberRole;
+
     @Builder
     public Member(String nickName, String username, String password) {
-        this.nickName = nickName;
-        this.userName = username;
+        this.nickname = nickName;
+        this.username = username;
         this.password = password;
+        this.memberRole = MemberRole.MEMBER;
+    }
+
+    public void roleUpdate(MemberRole memberRole) {
+        this.memberRole = memberRole;
     }
 }
