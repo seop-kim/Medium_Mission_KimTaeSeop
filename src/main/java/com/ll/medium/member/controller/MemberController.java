@@ -12,24 +12,22 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class MemberController {
 
-    // ========== 회원가입 폼 ==========
+    // == 회원가입 폼 ==
     @GetMapping("/join")
-    @ResponseBody
     public String joinForm() {
-        return "회원가입 폼 페이지입니다.";
+        return "/member/joinForm";
     }
 
-    // ========== 회원가입 ==========
+    // == 회원가입 ==
     @PostMapping("/join")
     @ResponseBody
     public String join() {
         return "회원가입 처리가 필요합니다.";
     }
 
-    // ========== 로그인 폼 ==========
+    // == 로그인 폼 ==
     @GetMapping("/login")
-    @ResponseBody
     public String login() {
-        return "로그인 폼 페이지입니다.";
+        return "/member/login";
     }
 }
