@@ -33,7 +33,8 @@ public class SecurityConfig {
 
                 .formLogin((formLogin) -> formLogin
                         .loginPage("/member/login")
-                        .defaultSuccessUrl("/"))
+                        .usernameParameter("nickname")
+                        .defaultSuccessUrl("/post/home"))
         ;
 
         return http.build();
