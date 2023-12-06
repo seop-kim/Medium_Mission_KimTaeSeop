@@ -25,12 +25,12 @@ class MemberServiceTest {
         String regiPass = "1234";
 
         Member joinMember = memberService.join(regiNickName, regiUserName, regiPass);
-        Member findOne = memberService.findByNickName(regiNickName);
+        Member findOne = memberService.findByNickname(regiNickName);
 
         assertAll(
                 ()->assertThat(findOne.getId()).isNotNull(),
-                () -> assertThat(findOne.getNickName()).isEqualTo(joinMember.getNickName()),
-                () -> assertThat(findOne.getUserName()).isEqualTo(joinMember.getUserName())
+                () -> assertThat(findOne.getNickname()).isEqualTo(joinMember.getNickname()),
+                () -> assertThat(findOne.getUsername()).isEqualTo(joinMember.getUsername())
         );
     }
 
