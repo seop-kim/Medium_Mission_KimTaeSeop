@@ -35,6 +35,11 @@ public class SecurityConfig {
                         .loginPage("/member/login")
                         .usernameParameter("nickname")
                         .defaultSuccessUrl("/post/home"))
+
+                .logout(logout -> logout
+                        .logoutRequestMatcher(new AntPathRequestMatcher("/member/logout"))
+                        .logoutSuccessUrl("/")
+                        .invalidateHttpSession(true))
         ;
 
         return http.build();
