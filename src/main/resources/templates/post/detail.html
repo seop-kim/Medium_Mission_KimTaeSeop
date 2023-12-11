@@ -1,4 +1,4 @@
-<html layout:decorate="~{layout}">
+<html layout:decorate="~{common/layout}">
 <div layout:fragment="content" class="container">
     <!-- content -->
     <div class="container mx-auto mt-8">
@@ -10,14 +10,16 @@
 
             <div class="card-text" style="white-space: pre-line;" th:text="${post.content}"></div>
         </div>
-
         <div class="my-3">
             <a th:href="@{|/post/${post.id}/modify|}" class="btn btn-sm btn-outline-secondary"
                sec:authorize="isAuthenticated()"
+               th:if="${post.author != null and #authentication.getPrincipal().getUsername() == post.author.nickname}"
                th:text="수정"></a>
 
             <a href="javascript:void(0);" th:data-uri="@{|/post/${post.id}/delete|}"
-               class="delete btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()"
+               class="delete btn btn-sm btn-outline-secondary"
+               sec:authorize="isAuthenticated()"
+               th:if="${post.author != null and #authentication.getPrincipal().getUsername() == post.author.nickname}"
                th:text="삭제"></a>
         </div>
 
