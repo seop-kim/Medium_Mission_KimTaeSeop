@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,12 +22,20 @@ public class PostService {
     // == 게시글 목록 ==
     public Page<Post> getList(int page) {
         List<Order> sorts = new ArrayList<>();
-        sorts.add(Sort.Order.desc("regiDate")); // question reverse
+        sorts.add(Sort.Order.desc("regiDate")); // reverse
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
         return postRepository.findAll(pageable);
     }
 
+    public Page<Post> getUserList(Long id, int page){
+        List<Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("regiDate")); // reverse
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        return postRepository.findByAuthor_Id(id, pageable);
+    }
+
     // == 게시글 작성 ==
+    @Transactional
     public void create(String title, String content, Member member) {
         Post post = Post.builder()
                 .title(title)
@@ -43,6 +52,7 @@ public class PostService {
     }
 
     // == 게시글 삭제 ==
+    @Transactional
     public void removePost(Post post) {
         postRepository.delete(post);
     }
@@ -59,5 +69,11 @@ public class PostService {
     }
     public long count() {
         return postRepository.count();
+    }
+
+    // == 게시글 수정 ==
+    @Transactional
+    public void modify(Post post, String title, String content) {
+        post.edit(title, content);
     }
 }
