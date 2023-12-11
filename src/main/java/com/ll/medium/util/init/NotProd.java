@@ -20,6 +20,8 @@ public class NotProd {
             if (memberService.count() == 0) {
                 Member findOne = memberService.join("admin", "관리자", "1234");
                 findOne.roleUpdate(MemberRole.ADMIN);
+
+                memberService.join("member", "김태섭", "1234");
             }
 
             if (postService.count() == 0) {
