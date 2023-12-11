@@ -38,4 +38,9 @@ public class Post {
         this.author = author;
         this.regiDate = LocalDateTime.now();
     }
+
+    public void edit(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
 }
