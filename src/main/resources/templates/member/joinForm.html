@@ -14,7 +14,7 @@
     <h2 class="text-2xl font-semibold mb-6">Member Signup</h2>
 
     <!-- 회원가입 폼 -->
-    <form action="/member/join" method="post">
+    <form  th:action method="post" onsubmit="submitJoinForm(this); return false;">
         <div class="mb-4">
             <label for="nickname" class="block text-sm font-medium text-gray-600">Nickname</label>
             <input type="text" id="nickname" name="nickname" required
@@ -22,8 +22,8 @@
         </div>
 
         <div class="mb-4">
-            <label for="name" class="block text-sm font-medium text-gray-600">Name</label>
-            <input type="text" id="name" name="name" required
+            <label for="username" class="block text-sm font-medium text-gray-600">Name</label>
+            <input type="text" id="username" name="username" required
                    class="mt-1 p-2 w-full border rounded-md bg-white">
         </div>
 
@@ -34,13 +34,60 @@
         </div>
 
         <div class="mb-4">
-            <label for="confirmPassword" class="block text-sm font-medium text-gray-600">Confirm Password</label>
-            <input type="password" id="confirmPassword" name="confirmPassword" required
+            <label for="passwordConfirm" class="block text-sm font-medium text-gray-600">Confirm Password</label>
+            <input type="password" id="passwordConfirm" name="passwordConfirm" required
                    class="mt-1 p-2 w-full border rounded-md bg-white">
         </div>
 
         <button type="submit" class="bg-blue-500 text-white p-2 rounded-md">Sign Up</button>
     </form>
+
+    <script>
+        function submitJoinForm(form) {
+            form.username.value = form.username.value.trim();
+
+            if (form.username.value.length == 0) {
+                alert('아이디를 입력해주세요.');
+                form.username.focus();
+
+                return;
+            }
+
+            if (form.nickname.value.length == 0) {
+                alert('닉네임을 입력해주세요.');
+                form.username.focus();
+
+                return;
+            }
+
+            form.password.value = form.password.value.trim();
+
+            if (form.password.value.length == 0) {
+                alert('비밀번호를 입력해주세요.');
+                form.password.focus();
+
+                return;
+            }
+
+            form.passwordConfirm.value = form.passwordConfirm.value.trim();
+
+            if (form.passwordConfirm.value.length == 0) {
+                alert('비밀번호 확인을 입력해주세요.');
+                form.passwordConfirm.focus();
+
+                return;
+            }
+
+            if (form.password.value != form.passwordConfirm.value) {
+                alert('비밀번호가 일치하지 않습니다.');
+                form.passwordConfirm.focus();
+
+                return;
+            }
+
+            form.submit();
+        }
+    </script>
 </div>
 
 </body>
