@@ -31,25 +31,34 @@ public class PostService {
         List<Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("regiDate")); // reverse
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
-        return postRepository.findAll(pageable);
+        return postRepository.findAllByIsPublishTrue(pageable);
     }
 
 
+    // == 특정 사용자 게시글 목록 ==
     public Page<Post> getUserList(Long id, int page) {
-
         List<Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("regiDate")); // reverse
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        return postRepository.findByAuthor_IdAndIsPublishTrue(id, pageable);
+    }
+
+    // == 나의 게시글 목록 == * 비공개 포스트 확인 가능
+    public Page<Post> getMyList(Long id, int page) {
+        List<Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("regiDate"));
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
         return postRepository.findByAuthor_Id(id, pageable);
     }
 
     // == 게시글 작성 ==
     @Transactional
-    public void create(String title, String content, Member member) {
+    public void create(String title, String content, boolean isPublish, Member member) {
         Post post = Post.builder()
                 .title(title)
                 .content(content)
                 .author(member)
+                .isPublish(isPublish)
                 .build();
 
         postRepository.save(post);
@@ -66,6 +75,23 @@ public class PostService {
         postRepository.delete(post);
     }
 
+    // == 게시글 수정 ==
+
+    @Transactional
+    public void modify(Post post, String title, String content, boolean isPublish) {
+        post.edit(title, content, isPublish);
+    }
+    // == 게시물 검색 ==
+
+    public Page<Post> getKeywordList(@DefaultValue(value = "") String keyword, int page) {
+        log.info("keyword : " + keyword);
+        List<Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("regiDate")); // reverse
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+
+        return postRepository.findByTitleContainingAndIsPublishTrue(keyword, pageable);
+    }
+
     public Post findById(Long id) {
         Optional<Post> findOndOp = postRepository.findById(id);
 
@@ -79,21 +105,5 @@ public class PostService {
 
     public long count() {
         return postRepository.count();
-    }
-
-    // == 게시글 수정 ==
-    @Transactional
-    public void modify(Post post, String title, String content) {
-        post.edit(title, content);
-    }
-
-    // == 게시물 검색 ==
-    public Page<Post> getKeywordList(@DefaultValue(value = "") String keyword, int page) {
-        log.info("keyword : " + keyword);
-        List<Order> sorts = new ArrayList<>();
-        sorts.add(Sort.Order.desc("regiDate")); // reverse
-        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
-
-        return postRepository.findByTitleContaining(keyword, pageable);
     }
 }

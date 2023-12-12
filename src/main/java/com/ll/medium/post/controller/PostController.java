@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -37,32 +39,59 @@ public class PostController {
         return "웹 홈";
     }
 
+    // == 게시글 목록 ==
     @GetMapping("/list")
     public String list(Model model,
                        @RequestParam(value = "page",
                                defaultValue = "0") int page) {
         Page<Post> paging = postService.getList(page);
         model.addAttribute("paging", paging);
+        model.addAttribute("postName", "전체 게시글 목록");
         return "/post/list";
     }
 
+    // == 나의 게시글 목록 ==
     @GetMapping("/myList")
-    public String myList(Principal principal) {
+    public String myList(Principal principal,
+                         Model model,
+                         @RequestParam(value = "page", defaultValue = "0") int page) {
         Member findOne = memberService.findByNickname(principal.getName());
-        log.info("member id : " + findOne.getId());
-        return "redirect:/post/%d/userList".formatted(findOne.getId());
+        log.info("[PostController.myList] member id : " + findOne.getId());
+
+        Page<Post> paging = postService.getMyList(findOne.getId(), page);
+        model.addAttribute("paging", paging);
+        model.addAttribute("postName", "나의 게시글 목록");
+        return "/post/list";
 
     }
 
+    // == 다른 유저 게시글 목록 ==
     @GetMapping("/{id}/userList")
     public String userList(@PathVariable("id") Long id,
                            Model model,
+                           Principal principal,
                            @RequestParam(value = "page", defaultValue = "0") int page) {
+
+        Authentication authentication = SecurityContextHolder.createEmptyContext().getAuthentication();
+        String findNickname = memberService.findById(id).getNickname();
+        // 사용자가 로그인 되어 있으면
+        if (authentication != null && authentication.isAuthenticated() && principal != null) {
+            log.info("[PostController.userList] id : " + id);
+            log.info("[PostController.userList] findNickname : " + findNickname);
+            log.info("[PostController.userList] principal.name : " + principal.getName());
+
+            if (findNickname.equals(principal.getName())) {
+                return "redirect:/post/myList";
+            }
+        }
+
         Page<Post> paging = postService.getUserList(id, page);
         model.addAttribute("paging", paging);
+        model.addAttribute("postName",findNickname + "님의 게시글 목록");
         return "/post/list";
     }
 
+    // == 게시글 상세 보기 ==
     @GetMapping("/{id}")
     public String detail(@PathVariable("id") Long id,
                          Model model) {
@@ -71,25 +100,31 @@ public class PostController {
         return "/post/detail";
     }
 
+
+    // == 게시글 작성 폼 ==
     @GetMapping("/write")
     public String writeForm(PostForm postForm) {
         return "/post/write_form";
     }
 
+    // == 게시글 작성 ==
     @PostMapping("/write")
     public String write(@Valid PostForm postForm,
                         Principal principal,
+                        boolean isPublish,
                         BindingResult bindingResult) {
 
+        log.info("[PostController.write(post)] isPublish : " + isPublish);
         if (bindingResult.hasErrors()) {
             return "/post/write_form";
         }
 
         Member findMember = memberService.findByNickname(principal.getName());
-        postService.create(postForm.getTitle(), postForm.getContent(), findMember);
+        postService.create(postForm.getTitle(), postForm.getContent(), isPublish, findMember);
         return "redirect:/post/list";
     }
 
+    // == 게시글 수정 폼 ==
     @GetMapping("/{id}/modify")
     public String modifyForm(@PathVariable("id") Long id,
                              PostForm postForm,
@@ -101,15 +136,21 @@ public class PostController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정권한이 없습니다.");
         }
 
+        // isPublish가 어떻게 찍히는지
+        log.info("[PostController.modifyForm] findOne.isPublish() : " + findOne.isPublish());
+
         postForm.setTitle(findOne.getTitle());
         postForm.setContent(findOne.getContent());
+        postForm.setPublish(findOne.isPublish());
 
         return "/post/modify_form";
     }
 
+    // == 게시글 수정 ==
     @PostMapping("/{id}/modify")
     public String modify(@PathVariable("id") Long id,
                          PostForm postForm,
+                         boolean isPublish,
                          BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -117,12 +158,14 @@ public class PostController {
         }
 
         Post findOne = postService.findById(id);
+        log.info("[PostController.modify] postForm.isPublish() : " + isPublish);
         log.info("update title : " + postForm.getTitle() + " | update content : " + postForm.getContent());
-        postService.modify(findOne, postForm.getTitle(), postForm.getContent());
+        postService.modify(findOne, postForm.getTitle(), postForm.getContent(), isPublish);
 
         return "redirect:/post/%d".formatted(id);
     }
 
+    // == 게시글 삭제 ==
     @GetMapping("/{id}/delete")
     public String delete(@PathVariable("id") Long id,
                          Principal principal) {
@@ -136,6 +179,7 @@ public class PostController {
         return "redirect:/post/list";
     }
 
+    // == 게시글 검색 ==
     @GetMapping("/search")
     public String keywordList(Model model,
                               String keyword,
