@@ -83,8 +83,9 @@
             <a th:href="@{/post/write}" class="btn btn-outline-dark">질문 등록</a>
         </div>
 
-        <form class="d-flex" role="search">
-            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+
+        <form class="d-flex" th:action="@{/post/search}" method="GET" role="search">
+            <input type="text" class="form-control me-2" name="keyword" id="keyword" placeholder="Search" aria-label="Search">
             <button class="btn btn-outline-success" type="submit">검색</button>
         </form>
     </div>
