@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+
 @RequestMapping("/member")
 @RequiredArgsConstructor
 @Controller
@@ -63,6 +64,7 @@ public class MemberController {
     public String login() {
         return "/member/login";
     }
+
 
     // == 마이페이지 ==
     @GetMapping("/mypage")

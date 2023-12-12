@@ -38,7 +38,9 @@ public class PostController {
     }
 
     @GetMapping("/list")
-    public String list(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+    public String list(Model model,
+                       @RequestParam(value = "page",
+                               defaultValue = "0") int page) {
         Page<Post> paging = postService.getList(page);
         model.addAttribute("paging", paging);
         return "/post/list";
@@ -132,5 +134,16 @@ public class PostController {
 
         postService.removePost(findOne);
         return "redirect:/post/list";
+    }
+
+    @GetMapping("/search")
+    public String keywordList(Model model,
+                              String keyword,
+                              @RequestParam(value = "page", defaultValue = "0") int page) {
+
+        Page<Post> paging = postService.getKeywordList(keyword, page);
+        model.addAttribute("paging", paging);
+        model.addAttribute("keyword", keyword);
+        return "/post/list";
     }
 }
