@@ -1,16 +1,18 @@
 package com.ll.medium.member.controller;
 
+import com.ll.medium.member.entity.Member;
 import com.ll.medium.member.service.MemberService;
 import com.ll.medium.member.util.MemberJoinForm;
 import jakarta.validation.Valid;
+import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 @RequestMapping("/member")
 @RequiredArgsConstructor
@@ -60,5 +62,14 @@ public class MemberController {
     @GetMapping("/login")
     public String login() {
         return "/member/login";
+    }
+
+    // == 마이페이지 ==
+    @GetMapping("/mypage")
+    public String myPage(Principal principal,
+                         Model model) {
+        Member findOne = memberService.findByNickname(principal.getName());
+        model.addAttribute("member", findOne);
+        return "/member/myPage";
     }
 }
