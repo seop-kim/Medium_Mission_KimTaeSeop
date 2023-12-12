@@ -1,0 +1,19 @@
+<html layout:decorate="~{common/layout}">
+<div layout:fragment="content" class="container">
+    <form th:object="${postForm}" method="post" class="mt-2">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <div th:replace="~{common/form_errors :: formErrorsFragment}"></div>
+        <div class="bg-white p-8 rounded-md shadow-md ">
+            <h1 class="text-3xl font-bold mb-4">질문 작성</h1>
+            <div class="mb-4">
+                <label for="title" class="block text-gray-700 text-sm font-bold mb-2">제목</label>
+                <input type="text" id="title" name="title" th:field="*{title}" class="w-full border rounded-md p-2">
+            </div>
+
+            <textarea th:field="*{content}" id="content" class="form-control mb-3" rows="10"></textarea>
+
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md">작성 완료</button>
+        </div>
+    </form>
+</div>
+</html>
