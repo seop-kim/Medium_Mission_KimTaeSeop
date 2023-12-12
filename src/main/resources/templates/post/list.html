@@ -1,0 +1,93 @@
+<!-- css bootstrap -->
+<html layout:decorate="~{common/layout}">
+<div layout:fragment="content" class="container my-3">
+
+    <div class="container mx-auto mt-8 mb-8 bg-white">
+        <h2 class="text-2xl font-semibold mb-4 bg-white">Post List</h2>
+        <div class="">
+            <div class="bg-white p-4  rounded shadow-md">
+                <table class="table">
+                    <thead class="">
+                    <tr class="text-center">
+                        <th style="width:50%">제목</th>
+                        <th>작성자</th>
+                        <th>등록일</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="text-center" th:each="post, loop : ${paging}">
+                        <!--<td th:text="${paging.getTotalElements - (paging.number * paging.size) - loop.index}"></td>-->
+                        <td class="text-start">
+                            <a th:href="@{|/post/${post.id}|}" th:text="${post.title}"></a>
+                            <!--                댓글 수 -->
+                            <!--                <span class="text-danger small ms-2"-->
+                            <!--                      th:if="${#lists.size(question.answers) > 0}"-->
+                            <!--                      th:text="${#lists.size(question.answers)}">-->
+                            <!--                </span>-->
+                        </td>
+                        <td><a th:href="@{|/post/${post.author.id}/userList|}" th:if="${post.author != null}" th:text="${post.author.nickname}"></a></td>
+                        <td th:text="${#temporals.format(post.regiDate, 'yyyy.MM.dd')}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 페이징 -->
+    <div class="container mx-auto mt-8 flex justify-center">
+        <div th:if="${!paging.isEmpty()}">
+            <ul class="flex items-center -space-x-px h-8 text-sm">
+                <li class="page-item"
+                    th:class="${!paging.hasPrevious} ? 'text-gray-500 pointer-events-none cursor-not-allowed'">
+                    <a class="flex items-center justify-center px-3 h-8 ms-0 text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700"
+                       th:href="@{|?page=0|}">
+                        <span><<</span>
+                    </a>
+                </li>
+                <li class="page-item"
+                    th:class="${!paging.hasPrevious} ? 'text-gray-500 pointer-events-none cursor-not-allowed'">
+                    <a class="flex items-center justify-center px-3 h-8 text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
+                       th:href="@{|?page=${paging.number-1}|}">
+                        <span><</span>
+                    </a>
+                </li>
+                <li th:each="page: ${#numbers.sequence(0, paging.totalPages-1)}"
+                    th:if="${page >= paging.number-3 and page <= paging.number+3}"
+
+                    class="page-item">
+                    <a th:text="${page + 1}"
+                       th:class="${page == paging.number} ? 'bg-blue-500 text-gray-100 pointer-events-none cursor-not-allowed flex items-center justify-center px-3 h-8' : 'flex items-center justify-center px-3 h-8 text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700'"
+                       th:href="@{|?page=${page}|}"></a>
+                </li>
+                <li class="page-item"
+                    th:class="${!paging.hasNext} ? 'text-gray-500 pointer-events-none cursor-not-allowed'">
+                    <a class="flex items-center justify-center px-3 h-8 text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
+                       th:href="@{|?page=${paging.number+1}|}">
+                        <span>></span>
+                    </a>
+                </li>
+                <li class="page-item"
+                    th:class="${!paging.hasNext} ? 'text-gray-500 pointer-events-none cursor-not-allowed'">
+                    <a class="flex items-center justify-center px-3 h-8 text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700"
+                       th:href="@{|?page=${paging.totalPages-1}|}">
+                        <span>>></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="flex mt-5">
+        <div class="list-group">
+            <a th:href="@{/post/write}" class="btn btn-outline-dark">질문 등록</a>
+        </div>
+
+        <form class="d-flex" role="search">
+            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success" type="submit">검색</button>
+        </form>
+    </div>
+
+</div>
+</html>
