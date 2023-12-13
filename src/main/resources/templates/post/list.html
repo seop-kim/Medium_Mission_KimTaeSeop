@@ -38,7 +38,7 @@
                             </span>
                         </td>
 
-                        <td><a th:href="@{|/post/${post.author.id}/userList|}" th:if="${post.author != null}"
+                        <td><a th:href="@{|/post/${post.author.id}/userList|}"
                                th:text="${post.author.nickname}"></a></td>
                         <td th:text="${#temporals.format(post.regiDate, 'yyyy.MM.dd')}"></td>
                     </tr>
