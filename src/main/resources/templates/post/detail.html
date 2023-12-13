@@ -1,5 +1,11 @@
 <html layout:decorate="~{common/layout}">
+<head>
+    <!-- 기타 메타 태그들... -->
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
 <div layout:fragment="content" class="container">
+
     <!-- content -->
     <div class="container mx-auto mt-8">
         <div class="bg-white p-8 rounded-md shadow-md">
@@ -17,20 +23,74 @@
 
             <div class="card-text" style="white-space: pre-line;" th:text="${post.content}"></div>
         </div>
-        <div class="my-3">
+        <div class="my-3"
+             sec:authorize="isAuthenticated()"
+             th:if="${post.author != null and #authentication.getPrincipal().getUsername() == post.author.nickname}">
             <a th:href="@{|/post/${post.id}/modify|}" class="btn btn-sm btn-outline-secondary"
-               sec:authorize="isAuthenticated()"
-               th:if="${post.author != null and #authentication.getPrincipal().getUsername() == post.author.nickname}"
                th:text="수정"></a>
 
             <a href="javascript:void(0);" th:data-uri="@{|/post/${post.id}/delete|}"
                class="delete btn btn-sm btn-outline-secondary"
-               sec:authorize="isAuthenticated()"
-               th:if="${post.author != null and #authentication.getPrincipal().getUsername() == post.author.nickname}"
                th:text="삭제"></a>
         </div>
 
+        <!-- 댓글 작성 폼 -->
+        <div class="mt-8" sec:authorize="isAuthenticated()">
+            <form th:action="@{|/comment/write/${post.id}|}" method="post">
+                <!-- 댓글 내용 입력 -->
+                <div class="mb-4">
+                    <div class="flex">
+                <textarea id="content"
+                          name="content"
+                          rows="3"
+                          class="w-full px-3 py-2 border rounded-md focus:outline-none focus:shadow-outline-blue"
+                          placeholder="댓글을 작성하세요..." required></textarea>
+
+                        <!-- 댓글 작성 버튼 -->
+                        <button type="submit"
+                                class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:shadow-outline-blue ml-2"
+                        >작성
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <span sec:authorize="isAnonymous()">로그인 후 댓글을 작성할 수 있습니다.</span>
+
+        <!-- 정적으로 30개의 댓글 렌더링 -->
+        <div class="mt-8">
+            <h2 class="text-xl font-bold mb-2">댓글 목록</h2>
+            <div th:each="comment : ${post.comments}">
+                <!-- 댓글 카드 -->
+                <div class="bg-white p-4 mb-4 rounded-md shadow-md comment-container" th:attr="data-comment-id=${comment.id}">
+                    <!-- 댓글 정보 -->
+                    <div class="flex justify-between items-center mb-2">
+                        <p class="text-gray-600"
+                           th:text="${comment.author.nickname} + ' | ' + ${#temporals.format(comment.regiDate, 'yyyy.MM.dd')}">
+                            작성자 | 등록일</p>
+                    </div>
+                    <!-- 댓글 내용 -->
+                    <div class="text-gray-800 mb-1" style="word-break: break-all;" th:text="${comment.content}">댓글 내용</div>
+
+                    <!-- 수정 및 삭제 버튼 -->
+                    <!-- 수정 버튼 -->
+                    <div sec:authorize="isAuthenticated()"
+                         th:if="${comment.author != null and #authentication.getPrincipal().getUsername() == comment.author.nickname}">
+                        <a href="javascript:void(0);" class="edit text-blue-500 hover:underline" th:text="수정"></a>
+                        <span class="edit-buttons mx-2" style="display:none;">|</span>
+                        <a href="javascript:void(0);" class="update text-blue-500 hover:underline"
+                           style="display:none;">수정하기</a>
+                        <span class="cancel-buttons mx-2" style="display:none;">|</span>
+                        <a href="javascript:void(0);" class="cancel text-red-500 hover:underline" style="display:none;">취소하기</a>
+                        <span class="mx-2">|</span>
+                        <a href="javascript:void(0);" class="delete text-red-500 hover:underline"
+                           th:data-uri="@{'/comment/' + ${comment.id} + '/delete'}" th:text="삭제"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
     <script layout:fragment="script" type='text/javascript'>
         const delete_elements = document.getElementsByClassName("delete");
         Array.from(delete_elements).forEach(function (element) {
@@ -39,6 +99,107 @@
                     location.href = this.dataset.uri;
                 }
                 ;
+            });
+        });
+
+        const edit_elements = document.querySelectorAll(".edit");
+        edit_elements.forEach(function (element) {
+            element.addEventListener('click', function () {
+                const commentContainer = this.closest('.comment-container');
+                if (!commentContainer) {
+                    console.error("comment-container를 찾을 수 없습니다.");
+                    return;
+                }
+                const commentContent = commentContainer.querySelector('.text-gray-800');
+                if (!commentContent) {
+                    console.error("comment-content2를 찾을 수 없습니다.");
+                    return;
+                }
+                const originalContent = commentContent.innerText.trim();
+
+                const textarea = document.createElement('textarea');
+                textarea.value = originalContent;
+                textarea.classList.add('w-full', 'px-3', 'py-2', 'border', 'rounded-md', 'focus:outline-none', 'focus:shadow-outline-blue');
+
+                // data-original-content 속성을 사용하여 원래 내용을 저장
+                textarea.setAttribute('data-original-content', originalContent);
+
+                commentContent.replaceWith(textarea);
+
+                element.style.display = 'none';
+                commentContainer.querySelector('.edit-buttons').style.display = 'inline';
+                commentContainer.querySelector('.cancel-buttons').style.display = 'inline';
+                commentContainer.querySelector('.update').style.display = 'inline';
+                commentContainer.querySelector('.cancel').style.display = 'inline';
+                commentContainer.querySelector('.delete').style.display = 'none';
+            });
+        });
+
+        const csrfToken = document.querySelector("meta[name='_csrf']").content;
+        const csrfHeader = document.querySelector("meta[name='_csrf_header']").content;
+
+        // 댓글 수정 버튼 클릭 시
+        const update_elements = document.querySelectorAll(".update");
+        update_elements.forEach(function (element) {
+            element.addEventListener('click', function () {
+                const commentContainer = this.closest('.comment-container');
+                if (!commentContainer) {
+                    console.error("comment-container를 찾을 수 없습니다.");
+                    return;
+                }
+                const textarea = commentContainer.querySelector('textarea');
+                if (!textarea) {
+                    console.error("textarea를 찾을 수 없습니다.");
+                    return;
+                }
+                const updatedContent = textarea.value;
+
+                // 댓글 ID 추출
+                const commentId = commentContainer.getAttribute('data-comment-id');
+
+                // AJAX를 사용하여 서버로 댓글 업데이트 요청
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '/comment/edit/' + commentId, true);
+                xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+                xhr.setRequestHeader(csrfHeader, csrfToken); // CSRF 토큰 추가
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        location.reload();
+                    } else {
+                        console.error("댓글 업데이트에 실패하였습니다.");
+                    }
+                };
+                const data = JSON.stringify({content: updatedContent});
+                xhr.send(data);
+            });
+        });
+
+        const cancel_elements = document.querySelectorAll(".cancel");
+        cancel_elements.forEach(function (element) {
+            element.addEventListener('click', function () {
+                const commentContainer = this.closest('.comment-container');
+                if (!commentContainer) {
+                    console.error("comment-container를 찾을 수 없습니다.");
+                    return;
+                }
+                const textarea = commentContainer.querySelector('textarea');
+                if (!textarea) {
+                    console.error("textarea를 찾을 수 없습니다.");
+                    return;
+                }
+                const originalContent = textarea.getAttribute('data-original-content');
+
+                const originalCommentContent = document.createElement('p');
+                originalCommentContent.classList.add('text-gray-800');
+                originalCommentContent.innerText = originalContent;
+                textarea.replaceWith(originalCommentContent);
+
+                commentContainer.querySelector('.edit').style.display = 'inline';
+                commentContainer.querySelector('.update').style.display = 'none';
+                commentContainer.querySelector('.cancel').style.display = 'none';
+                commentContainer.querySelector('.delete').style.display = 'inline';
+                commentContainer.querySelector('.edit-buttons').style.display = 'none';
+                commentContainer.querySelector('.cancel-buttons').style.display = 'none';
             });
         });
     </script>

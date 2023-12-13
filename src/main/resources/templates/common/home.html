@@ -3,7 +3,7 @@
 <div layout:fragment="content" class="container max-w-screen-xl bg-gray-100">
 
     <dic class="container font-sans">
-        <div class="mx-auto px-4 mt-4 max-w-screen-xl">
+        <div class="mx-auto px-4 mt-4">
             <!-- Search Area -->
             <div class="flex items-center justify-between mb-8">
                 <form class="relative w-full" th:action="@{/post/search}" method="GET" role="search">
@@ -35,7 +35,7 @@
 
             <div class="recent-posts bg-white p-8 rounded">
                 <div class="flex items-center mb-4">
-                    <h2 class="text-blue-500 mr-auto">최근 게시물</h2>
+                    <h2 class="text-black-500 mr-auto">최근 게시물</h2>
                     <a class="text-blue-500" th:href="@{/post/list}">더보기&gt;</a>
                 </div>
 
