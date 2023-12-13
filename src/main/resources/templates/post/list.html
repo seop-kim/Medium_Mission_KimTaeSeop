@@ -3,7 +3,12 @@
 <div layout:fragment="content" class="container my-3">
 
     <div class="container mx-auto mt-8 mb-8 bg-white">
-        <!--        <h2 class="text-2xl font-semibold mb-4 bg-white">Post List</h2>-->
+        <h1 class="text-2xl font-semibold mb-4 bg-white"
+            th:text="${postName}"></h1>
+
+        <h2 class="text-2xl font-semibold mb-4 bg-white"
+            th:if="${keyword} != null"
+            th:text="'\''+${keyword} + '\' 검색 결과입니다.'"></h2>
         <div class="">
             <div class="bg-white p-4  rounded shadow-md">
                 <table class="table">
@@ -17,6 +22,7 @@
                     <tbody>
                     <tr class="text-center" th:each="post, loop : ${paging}">
                         <!--<td th:text="${paging.getTotalElements - (paging.number * paging.size) - loop.index}"></td>-->
+
                         <td class="text-start">
                             <a th:href="@{|/post/${post.id}|}" th:text="${post.title}"></a>
                             <!--                댓글 수 -->
@@ -24,9 +30,16 @@
                             <!--                      th:if="${#lists.size(question.answers) > 0}"-->
                             <!--                      th:text="${#lists.size(question.answers)}">-->
                             <!--                </span>-->
+
+                            <!-- 게시글 공개 여부 -->
+                            <span class="text-violet-500 small ms-2"
+                                  th:if="${post.isPublish() == false}"
+                                  th:text="[비공개]">
+                            </span>
                         </td>
 
-                        <td><a th:href="@{|/post/${post.author.id}/userList|}" th:if="${post.author != null}" th:text="${post.author.nickname}"></a></td>
+                        <td><a th:href="@{|/post/${post.author.id}/userList|}"
+                               th:text="${post.author.nickname}"></a></td>
                         <td th:text="${#temporals.format(post.regiDate, 'yyyy.MM.dd')}"></td>
                     </tr>
                     </tbody>
@@ -85,14 +98,19 @@
     </div>
     <div class="flex mt-5">
         <div class="list-group">
-            <a th:href="@{/post/write}" class="btn btn-outline-dark">질문 등록</a>
+            <a th:href="@{/post/write}" class="btn btn-outline-dark" sec:authorize="isAuthenticated()">질문 등록</a>
         </div>
 
         <form class="d-flex" th:action="@{/post/search}" method="GET" role="search">
-            <input type="text" class="form-control me-2" name="keyword" id="keyword" placeholder="Search" aria-label="Search">
+            <input type="text" class="form-control me-2"
+                   name="keyword"
+                   id="keyword"
+                   placeholder="Search"
+                   aria-label="Search"
+                   required
+                   th:value="${keyword}">
             <button class="btn btn-outline-success" type="submit">검색</button>
         </form>
     </div>
-
 </div>
 </html>

@@ -26,8 +26,10 @@ public class NotProd {
 
             if (postService.count() == 0) {
                 for (int i = 1; i <= 100; i++) {
-                    postService.create("test title " + i, "test content " + i, memberService.findById(1L));
+                    postService.create("test title " + i, "test content " + i,true, memberService.findById(1L));
                 }
+
+                postService.create("member test title ", "member test content ",false, memberService.findById(2L));
             }
 
         };

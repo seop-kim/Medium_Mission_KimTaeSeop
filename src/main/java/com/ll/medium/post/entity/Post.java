@@ -31,16 +31,20 @@ public class Post {
 
     private LocalDateTime regiDate;
 
+    private boolean isPublish;
+
     @Builder
-    public Post(String title, String content, Member author) {
+    public Post(String title, String content, Member author, boolean isPublish) {
         this.title = title;
         this.content = content;
         this.author = author;
         this.regiDate = LocalDateTime.now();
+        this.isPublish = isPublish;
     }
 
-    public void edit(String title, String content) {
+    public void edit(String title, String content, boolean isPublish) {
         this.title = title;
         this.content = content;
+        this.isPublish = isPublish;
     }
 }
