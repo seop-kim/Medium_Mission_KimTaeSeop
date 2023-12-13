@@ -33,12 +33,6 @@ public class PostController {
     private final PostService postService;
     private final MemberService memberService;
 
-    @GetMapping("/home")
-    @ResponseBody
-    public String home() {
-        return "웹 홈";
-    }
-
     // == 게시글 목록 ==
     @GetMapping("/list")
     public String list(Model model,
@@ -62,7 +56,6 @@ public class PostController {
         model.addAttribute("paging", paging);
         model.addAttribute("postName", "나의 게시글 목록");
         return "/post/list";
-
     }
 
     // == 다른 유저 게시글 목록 ==
@@ -72,18 +65,7 @@ public class PostController {
                            Principal principal,
                            @RequestParam(value = "page", defaultValue = "0") int page) {
 
-        Authentication authentication = SecurityContextHolder.createEmptyContext().getAuthentication();
         String findNickname = memberService.findById(id).getNickname();
-        // 사용자가 로그인 되어 있으면
-        if (authentication != null && authentication.isAuthenticated() && principal != null) {
-            log.info("[PostController.userList] id : " + id);
-            log.info("[PostController.userList] findNickname : " + findNickname);
-            log.info("[PostController.userList] principal.name : " + principal.getName());
-
-            if (findNickname.equals(principal.getName())) {
-                return "redirect:/post/myList";
-            }
-        }
 
         Page<Post> paging = postService.getUserList(id, page);
         model.addAttribute("paging", paging);
