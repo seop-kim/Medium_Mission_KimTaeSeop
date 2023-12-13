@@ -1,6 +1,9 @@
 package com.ll.medium.post.entity;
 
+import com.ll.medium.comment.entity.Comment;
 import com.ll.medium.member.entity.Member;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -9,6 +12,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,11 +31,15 @@ public class Post {
 
     private String title;
 
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     private LocalDateTime regiDate;
 
     private boolean isPublish;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    private List<Comment> comments;
 
     @Builder
     public Post(String title, String content, Member author, boolean isPublish) {
