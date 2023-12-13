@@ -47,4 +47,9 @@ public class CommentService {
             throw new IllegalArgumentException("댓글이 존재하지 않습니다. id=" + id);
         }
     }
+
+    @Transactional
+    public void deleteComment(Comment comment) {
+        commentRepository.delete(comment);
+    }
 }
