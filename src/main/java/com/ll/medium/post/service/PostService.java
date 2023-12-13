@@ -25,6 +25,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class PostService {
     private final PostRepository postRepository;
 
+    public List<Post> getHomeList() {
+        return postRepository.findTop30ByIsPublishTrueOrderByRegiDateDesc();
+    }
 
     // == 게시글 목록 ==
     public Page<Post> getList(int page) {
