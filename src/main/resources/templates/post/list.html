@@ -25,11 +25,10 @@
 
                         <td class="text-start">
                             <a th:href="@{|/post/${post.id}|}" th:text="${post.title}"></a>
-                            <!--                댓글 수 -->
-                            <!--                <span class="text-danger small ms-2"-->
-                            <!--                      th:if="${#lists.size(question.answers) > 0}"-->
-                            <!--                      th:text="${#lists.size(question.answers)}">-->
-                            <!--                </span>-->
+                            <span class="text-danger small ms-2"
+                                  th:if="${#lists.size(post.comments) > 0}"
+                                  th:text="${#lists.size(post.comments)}">
+                                            </span>
 
                             <!-- 게시글 공개 여부 -->
                             <span class="text-violet-500 small ms-2"
