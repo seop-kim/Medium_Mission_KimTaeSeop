@@ -39,7 +39,9 @@ public class MemberService {
 
     // == nickName 조회 ==
     public Member findByNickname(String nickname) {
+        System.out.println("nickName : " + nickname);
         Optional<Member> findOne = memberRepository.findByNickname(nickname);
+        System.out.println("nickName2 : "  + findOne.get().getNickname());
 
         if (findOne.isEmpty()) {
             throw new IllegalArgumentException("검색하는 닉네임의 사용자가 없습니다.");
