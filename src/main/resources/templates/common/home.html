@@ -1,0 +1,54 @@
+<!-- css bootstrap -->
+<html layout:decorate="~{common/layout}">
+<div layout:fragment="content" class="container max-w-screen-xl bg-gray-100">
+
+    <dic class="container font-sans">
+        <div class="mx-auto px-4 mt-4">
+            <!-- Search Area -->
+            <div class="flex items-center justify-between mb-8">
+                <form class="relative w-full" th:action="@{/post/search}" method="GET" role="search">
+                    <input type="text"
+                           class="w-full pl-10 pr-12 py-3 rounded-full focus:outline-none focus:shadow-outline-blue"
+                           placeholder="Search..."
+                           name="keyword"
+                           id="keyword"
+                           aria-label="Search"
+                           required>
+                    <div class="absolute left-3 top-1/2 transform -translate-y-1/2">
+                        <!-- 돋보기 아이콘 -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none"
+                             viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M15 15.36l2.42 2.42L19 17.34l-2.42-2.42a8 8 0 1 0-1.42 1.42zM10 16a6 6 0 1 1 6-6 6 6 0 0 1-6 6z"/>
+                        </svg>
+                    </div>
+                    <button class="absolute right-3 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white rounded-full p-2"
+                            type="submit">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+
+            <div class="recent-posts bg-white p-8 rounded">
+                <div class="flex items-center mb-4">
+                    <h2 class="text-black-500 mr-auto">최근 게시물</h2>
+                    <a class="text-blue-500" th:href="@{/post/list}">더보기&gt;</a>
+                </div>
+
+                <!-- 최근 게시물 카드 (posts 데이터 사용) -->
+                <div class="grid grid-cols-5 gap-4">
+                    <a th:each="post : ${posts}" th:href="@{'/post/' + ${post.id}}" class="block no-underline w-57 mb-2">
+                        <div class="bg-white border border-gray-200 p-6 rounded transition duration-300 ease-in-out transform hover:shadow-lg">
+                            <h3 class="text-lg font-semibold mb-4" th:text="${post.title.length() > 15 ? post.title.substring(0, 12) + '...' : post.title}">게시물 제목</h3>
+                            <p class="text-sm text-gray-600 mb-2" th:text="${post.author.nickname + ' | ' + #temporals.format(post.regiDate, 'yyyy.MM.dd')}">작성자 | 2023-01-01</p>
+                            <p class="text-sm text-gray-600" th:text="${post.content.length() > 20 ? post.content.substring(0, 17) + '...' : post.content}"></p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </dic>
