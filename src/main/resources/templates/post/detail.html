@@ -1,9 +1,4 @@
 <html layout:decorate="~{common/layout}">
-<head>
-    <!-- 기타 메타 태그들... -->
-    <meta name="_csrf" th:content="${_csrf.token}"/>
-    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
-</head>
 <div layout:fragment="content" class="container">
 
     <!-- content -->
@@ -15,7 +10,11 @@
                 <span class="text-violet-500 text-1xl ml-2 mb-4"
                       th:if="${post.isPublish() == false}"
                       th:text="[비공개]">
-            </span>
+                </span>
+
+                <div class="ml-auto">
+                    <h1 class="text-3xl mb-4" th:text="${post.view}"></h1>
+                </div>
             </div>
             <p class="text-gray-600 mb-4"
                th:text="${post.author.nickname} + ' | ' + ${#temporals.format(post.regiDate, 'yyyy.MM.dd')}">작성자

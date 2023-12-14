@@ -17,6 +17,7 @@
                         <th style="width:50%">제목</th>
                         <th>작성자</th>
                         <th>등록일</th>
+                        <th>조회수</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -40,6 +41,8 @@
                         <td><a th:href="@{|/post/${post.author.id}/userList|}"
                                th:text="${post.author.nickname}"></a></td>
                         <td th:text="${#temporals.format(post.regiDate, 'yyyy.MM.dd')}"></td>
+
+                        <td th:text="${post.view}"></td>
                     </tr>
                     </tbody>
                 </table>

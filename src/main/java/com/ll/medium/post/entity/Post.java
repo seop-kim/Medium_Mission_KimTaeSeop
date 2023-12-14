@@ -38,6 +38,8 @@ public class Post {
 
     private boolean isPublish;
 
+    private Long view;
+
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<Comment> comments;
 
@@ -48,11 +50,16 @@ public class Post {
         this.author = author;
         this.regiDate = LocalDateTime.now();
         this.isPublish = isPublish;
+        this.view = 0L;
     }
 
     public void edit(String title, String content, boolean isPublish) {
         this.title = title;
         this.content = content;
         this.isPublish = isPublish;
+    }
+
+    public void updateView() {
+        view++;
     }
 }
