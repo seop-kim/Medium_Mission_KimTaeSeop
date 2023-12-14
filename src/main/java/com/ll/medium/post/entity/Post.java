@@ -8,11 +8,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -38,6 +40,9 @@ public class Post {
 
     private boolean isPublish;
 
+    @ManyToMany
+    Set<Member> like;
+
     private Long view;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
@@ -61,5 +66,9 @@ public class Post {
 
     public void updateView() {
         view++;
+    }
+
+    public boolean isLikedBy(Member member) {
+        return like.contains(member);
     }
 }

@@ -12,8 +12,10 @@ import jakarta.validation.Valid;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.weaver.patterns.TypePatternQuestions.Question;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -196,5 +198,14 @@ public class PostController {
         model.addAttribute("paging", paging);
         model.addAttribute("keyword", keyword);
         return "/post/list";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/like/{id}")
+    public String postLike(Principal principal, @PathVariable("id") Long id) {
+        Post post = postService.getPost(id);
+        Member author = memberService.findByNickname(principal.getName());
+        postService.updateLike(post, author);
+        return "redirect:/post/%d".formatted(id);
     }
 }

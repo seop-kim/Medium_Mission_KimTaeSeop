@@ -11,6 +11,7 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.weaver.patterns.TypePatternQuestions.Question;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -113,6 +114,16 @@ public class PostService {
         }
 
         return findOndOp.get();
+    }
+
+    @Transactional
+    public void updateLike(Post post, Member member) {
+        if (post.getLike().contains(member)) {
+            post.getLike().remove(member);
+            return;
+        }
+
+        post.getLike().add(member);
     }
 
     @Transactional
