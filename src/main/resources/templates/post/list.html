@@ -100,7 +100,7 @@
     </div>
     <div class="flex mt-5">
         <div class="list-group">
-            <a th:href="@{/post/write}" class="btn btn-outline-dark" sec:authorize="isAuthenticated()">질문 등록</a>
+            <a th:href="@{/post/write}" class="btn btn-outline-dark ml-1" sec:authorize="isAuthenticated()">질문 등록</a>
         </div>
 
         <form class="d-flex" th:action="@{/post/search}" method="GET" role="search">

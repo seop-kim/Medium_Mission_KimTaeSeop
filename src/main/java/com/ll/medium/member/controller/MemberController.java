@@ -21,13 +21,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class MemberController {
     private final MemberService memberService;
 
-    // == 회원가입 폼 ==
+    /**
+     * 회원가입 폼 이동
+     */
     @GetMapping("/join")
     public String joinForm(MemberJoinForm memberJoinForm) {
         return "/member/joinForm";
     }
 
-    // == 회원가입 ==
+
+    /**
+     * 회원가입
+     */
     @PostMapping("/join")
     public String join(@Valid MemberJoinForm memberJoinForm,
                        BindingResult bindingResult) {
@@ -59,19 +64,23 @@ public class MemberController {
         return "/member/login";
     }
 
-    // == 로그인 폼 ==
+    /**
+     * 로그인 폼 이동
+     */
     @GetMapping("/login")
     public String login() {
         return "/member/login";
     }
 
 
-    // == 마이페이지 ==
+    /**
+     * 마이페이지 이동
+     */
     @GetMapping("/mypage")
     public String myPage(Principal principal,
                          Model model) {
-        Member findOne = memberService.findByNickname(principal.getName());
-        model.addAttribute("member", findOne);
+        Member findMember = memberService.findByNickname(principal.getName());
+        model.addAttribute("member", findMember);
         return "/member/myPage";
     }
 }

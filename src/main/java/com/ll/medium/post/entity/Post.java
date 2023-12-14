@@ -11,7 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -48,6 +47,8 @@ public class Post {
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<Comment> comments;
 
+
+    // Entity Methods
     @Builder
     public Post(String title, String content, Member author, boolean isPublish) {
         this.title = title;
@@ -64,7 +65,7 @@ public class Post {
         this.isPublish = isPublish;
     }
 
-    public void updateView() {
+    public void increaseView() {
         view++;
     }
 

@@ -16,40 +16,46 @@ import org.springframework.transaction.annotation.Transactional;
 public class CommentService {
     private final CommentRepository commentRepository;
 
+    /**
+     * 댓글 작성 기능
+     * */
     public void write(String content, Member member, Post post) {
         Comment comment = Comment.builder()
                 .content(content)
                 .author(member)
                 .post(post)
                 .build();
+
         commentRepository.save(comment);
     }
 
-    public Comment findById(Long id) {
-        Optional<Comment> findOne = commentRepository.findById(id);
+    /**
+     * 댓글 수정 기능
+     * */
+    @Transactional
+    public void editComment(Comment comment, String content) {
+        comment.editContent(content);
+    }
 
-        if (findOne.isEmpty()) {
+    /**
+     *댓글 삭제 기능
+     * */
+    @Transactional
+    public void deleteComment(Comment comment) {
+        commentRepository.delete(comment);
+    }
+
+    /**
+     * ID로 댓글 조회
+     * */
+    public Comment findById(Long id) {
+        Optional<Comment> findComment = commentRepository.findById(id);
+
+        if (findComment.isEmpty()) {
             log.error("[CommentServiceException] answer not found");
             throw new IllegalArgumentException("[CommentServiceException] answer not found");
         }
 
-        return findOne.get();
-    }
-
-    @Transactional
-    public void editComment(Long id, String content) {
-        Optional<Comment> optionalComment = commentRepository.findById(id);
-        if (optionalComment.isPresent()) {
-            Comment comment = optionalComment.get();
-            comment.editContent(content);
-        } else {
-            // 댓글이 존재하지 않을 경우 예외 처리 또는 적절한 로직 수행
-            throw new IllegalArgumentException("댓글이 존재하지 않습니다. id=" + id);
-        }
-    }
-
-    @Transactional
-    public void deleteComment(Comment comment) {
-        commentRepository.delete(comment);
+        return findComment.get();
     }
 }
