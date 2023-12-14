@@ -5,12 +5,17 @@ import com.ll.medium.member.service.MemberService;
 import com.ll.medium.post.entity.Post;
 import com.ll.medium.post.service.PostService;
 import com.ll.medium.post.util.PostForm;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.weaver.patterns.TypePatternQuestions.Question;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -50,7 +55,6 @@ public class PostController {
                          Model model,
                          @RequestParam(value = "page", defaultValue = "0") int page) {
         Member findOne = memberService.findByNickname(principal.getName());
-        log.info("[PostController.myList] member id : " + findOne.getId());
 
         Page<Post> paging = postService.getMyList(findOne.getId(), page);
         model.addAttribute("paging", paging);
@@ -62,24 +66,55 @@ public class PostController {
     @GetMapping("/{id}/userList")
     public String userList(@PathVariable("id") Long id,
                            Model model,
-                           Principal principal,
                            @RequestParam(value = "page", defaultValue = "0") int page) {
 
         String findNickname = memberService.findById(id).getNickname();
 
         Page<Post> paging = postService.getUserList(id, page);
         model.addAttribute("paging", paging);
-        model.addAttribute("postName",findNickname + "님의 게시글 목록");
+        model.addAttribute("postName", findNickname + "님의 게시글 목록");
         return "/post/list";
     }
 
     // == 게시글 상세 보기 ==
     @GetMapping("/{id}")
     public String detail(@PathVariable("id") Long id,
+                         HttpServletRequest req,
+                         HttpServletResponse res,
                          Model model) {
+        viewUpdate(id, req, res);
         Post post = postService.getPost(id);
         model.addAttribute("post", post);
         return "/post/detail";
+    }
+
+    private void viewUpdate(Long id, HttpServletRequest req, HttpServletResponse res) {
+        Cookie oldCookie = null;
+
+        Cookie[] cookies = req.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("postView")) {
+                    oldCookie = cookie;
+                }
+            }
+        }
+
+        if (oldCookie != null) {
+            if (!oldCookie.getValue().contains("[" + id.toString() + "]")) {
+                postService.viewUp(id);
+                oldCookie.setValue(oldCookie.getValue() + "_[" + id + "]");
+                oldCookie.setPath("/");
+                oldCookie.setMaxAge(60); // 1분 설정
+                res.addCookie(oldCookie);
+            }
+        } else {
+            postService.viewUp(id);
+            Cookie newCookie = new Cookie("postView", "[" + id + "]");
+            newCookie.setPath("/");
+            newCookie.setMaxAge(60); // 1분 설정
+            res.addCookie(newCookie);
+        }
     }
 
 
@@ -95,8 +130,6 @@ public class PostController {
                         Principal principal,
                         boolean isPublish,
                         BindingResult bindingResult) {
-
-        log.info("[PostController.write(post)] isPublish : " + isPublish);
         if (bindingResult.hasErrors()) {
             return "/post/write_form";
         }
@@ -118,9 +151,6 @@ public class PostController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정권한이 없습니다.");
         }
 
-        // isPublish가 어떻게 찍히는지
-        log.info("[PostController.modifyForm] findOne.isPublish() : " + findOne.isPublish());
-
         postForm.setTitle(findOne.getTitle());
         postForm.setContent(findOne.getContent());
         postForm.setPublish(findOne.isPublish());
@@ -140,8 +170,6 @@ public class PostController {
         }
 
         Post findOne = postService.findById(id);
-        log.info("[PostController.modify] postForm.isPublish() : " + isPublish);
-        log.info("update title : " + postForm.getTitle() + " | update content : " + postForm.getContent());
         postService.modify(findOne, postForm.getTitle(), postForm.getContent(), isPublish);
 
         return "redirect:/post/%d".formatted(id);
@@ -166,10 +194,18 @@ public class PostController {
     public String keywordList(Model model,
                               String keyword,
                               @RequestParam(value = "page", defaultValue = "0") int page) {
-
         Page<Post> paging = postService.getKeywordList(keyword, page);
         model.addAttribute("paging", paging);
         model.addAttribute("keyword", keyword);
         return "/post/list";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/like/{id}")
+    public String postLike(Principal principal, @PathVariable("id") Long id) {
+        Post post = postService.getPost(id);
+        Member author = memberService.findByNickname(principal.getName());
+        postService.updateLike(post, author);
+        return "redirect:/post/%d".formatted(id);
     }
 }

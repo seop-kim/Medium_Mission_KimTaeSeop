@@ -1,9 +1,4 @@
 <html layout:decorate="~{common/layout}">
-<head>
-    <!-- 기타 메타 태그들... -->
-    <meta name="_csrf" th:content="${_csrf.token}"/>
-    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
-</head>
 <div layout:fragment="content" class="container">
 
     <!-- content -->
@@ -15,7 +10,11 @@
                 <span class="text-violet-500 text-1xl ml-2 mb-4"
                       th:if="${post.isPublish() == false}"
                       th:text="[비공개]">
-            </span>
+                </span>
+
+                <div class="ml-auto">
+                    <h1 class="text-3xl mb-4" th:text="${post.view}"></h1>
+                </div>
             </div>
             <p class="text-gray-600 mb-4"
                th:text="${post.author.nickname} + ' | ' + ${#temporals.format(post.regiDate, 'yyyy.MM.dd')}">작성자
@@ -23,15 +22,25 @@
 
             <div class="card-text" style="white-space: pre-line;" th:text="${post.content}"></div>
         </div>
-        <div class="my-3"
-             sec:authorize="isAuthenticated()"
-             th:if="${post.author != null and #authentication.getPrincipal().getUsername() == post.author.nickname}">
-            <a th:href="@{|/post/${post.id}/modify|}" class="btn btn-sm btn-outline-secondary"
-               th:text="수정"></a>
+        <div class="flex">
+            <div class="my-3 mr-1">
+                <a th:href="@{|/post/like/${post.id}|}" class="recommend btn btn-sm btn-outline-secondary">
+                    추천
+                    <span class="badge rounded-pill" th:text="${#lists.size(post.like)}"></span>
+                </a>
+            </div>
 
-            <a href="javascript:void(0);" th:data-uri="@{|/post/${post.id}/delete|}"
-               class="delete btn btn-sm btn-outline-secondary"
-               th:text="삭제"></a>
+            <div class="my-3"
+                 sec:authorize="isAuthenticated()"
+                 th:if="${post.author != null and #authentication.getPrincipal().getUsername() == post.author.nickname}">
+
+                <a th:href="@{|/post/${post.id}/modify|}" class="btn btn-sm btn-outline-secondary"
+                   th:text="수정"></a>
+
+                <a href="javascript:void(0);" th:data-uri="@{|/post/${post.id}/delete|}"
+                   class="delete btn btn-sm btn-outline-secondary"
+                   th:text="삭제"></a>
+            </div>
         </div>
 
         <!-- 댓글 작성 폼 -->
@@ -62,7 +71,8 @@
             <h2 class="text-xl font-bold mb-2">댓글 목록</h2>
             <div th:each="comment : ${post.comments}">
                 <!-- 댓글 카드 -->
-                <div class="bg-white p-4 mb-4 rounded-md shadow-md comment-container" th:attr="data-comment-id=${comment.id}">
+                <div class="bg-white p-4 mb-4 rounded-md shadow-md comment-container"
+                     th:attr="data-comment-id=${comment.id}">
                     <!-- 댓글 정보 -->
                     <div class="flex justify-between items-center mb-2">
                         <p class="text-gray-600"
@@ -70,7 +80,8 @@
                             작성자 | 등록일</p>
                     </div>
                     <!-- 댓글 내용 -->
-                    <div class="text-gray-800 mb-1" style="word-break: break-all;" th:text="${comment.content}">댓글 내용</div>
+                    <div class="text-gray-800 mb-1" style="word-break: break-all;" th:text="${comment.content}">댓글 내용
+                    </div>
 
                     <!-- 수정 및 삭제 버튼 -->
                     <!-- 수정 버튼 -->
@@ -92,6 +103,8 @@
     </div>
 
     <script layout:fragment="script" type='text/javascript'>
+
+
         const delete_elements = document.getElementsByClassName("delete");
         Array.from(delete_elements).forEach(function (element) {
             element.addEventListener('click', function () {

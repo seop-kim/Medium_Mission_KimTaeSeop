@@ -4,17 +4,21 @@ import com.ll.medium.member.entity.Member;
 import com.ll.medium.post.entity.Post;
 import com.ll.medium.post.repository.PostRepository;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.weaver.patterns.TypePatternQuestions.Question;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,8 +72,15 @@ public class PostService {
     }
 
     // == 게시글 조회 ==
+    @Transactional
     public Post getPost(Long id) {
-        return postRepository.findById(id).get();
+        Optional<Post> findOndOp = postRepository.findById(id);
+
+        if (findOndOp.isEmpty()) {
+            throw new IllegalArgumentException("검색된 포스트가 없습니다.");
+        }
+
+        return findOndOp.get();
     }
 
     // == 게시글 삭제 ==
@@ -105,6 +116,27 @@ public class PostService {
         return findOndOp.get();
     }
 
+    @Transactional
+    public void updateLike(Post post, Member member) {
+        if (post.getLike().contains(member)) {
+            post.getLike().remove(member);
+            return;
+        }
+
+        post.getLike().add(member);
+    }
+
+    @Transactional
+    public void viewUp(Long id) {
+        Optional<Post> findOndOp = postRepository.findById(id);
+
+        if (findOndOp.isEmpty()) {
+            throw new IllegalArgumentException("검색된 포스트가 없습니다.");
+        }
+
+        Post post = findOndOp.get();
+        post.updateView();
+    }
 
     public long count() {
         return postRepository.count();

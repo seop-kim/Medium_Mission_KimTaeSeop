@@ -38,14 +38,6 @@ public class NotProd {
                 postService.create("member test title ", "member test content ", false, member);
             }
 
-            post = postService.findById(100L);
-
-            if (post != null) {
-                for (int i = 1; i <= 10; i++) {
-                    commentService.write("test comment" + i, member, post);
-                }
-            }
-
         };
     }
 }
