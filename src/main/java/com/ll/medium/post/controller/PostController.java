@@ -5,19 +5,12 @@ import com.ll.medium.member.service.MemberService;
 import com.ll.medium.post.entity.Post;
 import com.ll.medium.post.service.PostService;
 import com.ll.medium.post.util.PostForm;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.weaver.patterns.TypePatternQuestions.Question;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -38,108 +31,63 @@ public class PostController {
     private final PostService postService;
     private final MemberService memberService;
 
-    // == 게시글 목록 ==
+    @GetMapping("/home")
+    @ResponseBody
+    public String home() {
+        return "웹 홈";
+    }
+
     @GetMapping("/list")
-    public String list(Model model,
-                       @RequestParam(value = "page",
-                               defaultValue = "0") int page) {
+    public String list(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
         Page<Post> paging = postService.getList(page);
         model.addAttribute("paging", paging);
-        model.addAttribute("postName", "전체 게시글 목록");
         return "/post/list";
     }
 
-    // == 나의 게시글 목록 ==
     @GetMapping("/myList")
-    public String myList(Principal principal,
-                         Model model,
-                         @RequestParam(value = "page", defaultValue = "0") int page) {
+    public String myList(Principal principal) {
         Member findOne = memberService.findByNickname(principal.getName());
+        log.info("member id : " + findOne.getId());
+        return "redirect:/post/%d/userList".formatted(findOne.getId());
 
-        Page<Post> paging = postService.getMyList(findOne.getId(), page);
-        model.addAttribute("paging", paging);
-        model.addAttribute("postName", "나의 게시글 목록");
-        return "/post/list";
     }
 
-    // == 다른 유저 게시글 목록 ==
     @GetMapping("/{id}/userList")
     public String userList(@PathVariable("id") Long id,
                            Model model,
                            @RequestParam(value = "page", defaultValue = "0") int page) {
-
-        String findNickname = memberService.findById(id).getNickname();
-
         Page<Post> paging = postService.getUserList(id, page);
         model.addAttribute("paging", paging);
-        model.addAttribute("postName", findNickname + "님의 게시글 목록");
         return "/post/list";
     }
 
-    // == 게시글 상세 보기 ==
     @GetMapping("/{id}")
     public String detail(@PathVariable("id") Long id,
-                         HttpServletRequest req,
-                         HttpServletResponse res,
                          Model model) {
-        viewUpdate(id, req, res);
         Post post = postService.getPost(id);
         model.addAttribute("post", post);
         return "/post/detail";
     }
 
-    private void viewUpdate(Long id, HttpServletRequest req, HttpServletResponse res) {
-        Cookie oldCookie = null;
-
-        Cookie[] cookies = req.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("postView")) {
-                    oldCookie = cookie;
-                }
-            }
-        }
-
-        if (oldCookie != null) {
-            if (!oldCookie.getValue().contains("[" + id.toString() + "]")) {
-                postService.viewUp(id);
-                oldCookie.setValue(oldCookie.getValue() + "_[" + id + "]");
-                oldCookie.setPath("/");
-                oldCookie.setMaxAge(60); // 1분 설정
-                res.addCookie(oldCookie);
-            }
-        } else {
-            postService.viewUp(id);
-            Cookie newCookie = new Cookie("postView", "[" + id + "]");
-            newCookie.setPath("/");
-            newCookie.setMaxAge(60); // 1분 설정
-            res.addCookie(newCookie);
-        }
-    }
-
-
-    // == 게시글 작성 폼 ==
     @GetMapping("/write")
     public String writeForm(PostForm postForm) {
         return "/post/write_form";
     }
 
-    // == 게시글 작성 ==
     @PostMapping("/write")
     public String write(@Valid PostForm postForm,
                         Principal principal,
-                        boolean isPublish,
                         BindingResult bindingResult) {
+
         if (bindingResult.hasErrors()) {
             return "/post/write_form";
         }
 
         Member findMember = memberService.findByNickname(principal.getName());
-        postService.create(postForm.getTitle(), postForm.getContent(), isPublish, findMember);
+        postService.create(postForm.getTitle(), postForm.getContent(), findMember);
         return "redirect:/post/list";
     }
 
-    // == 게시글 수정 폼 ==
     @GetMapping("/{id}/modify")
     public String modifyForm(@PathVariable("id") Long id,
                              PostForm postForm,
@@ -153,16 +101,13 @@ public class PostController {
 
         postForm.setTitle(findOne.getTitle());
         postForm.setContent(findOne.getContent());
-        postForm.setPublish(findOne.isPublish());
 
         return "/post/modify_form";
     }
 
-    // == 게시글 수정 ==
     @PostMapping("/{id}/modify")
     public String modify(@PathVariable("id") Long id,
                          PostForm postForm,
-                         boolean isPublish,
                          BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -170,12 +115,12 @@ public class PostController {
         }
 
         Post findOne = postService.findById(id);
-        postService.modify(findOne, postForm.getTitle(), postForm.getContent(), isPublish);
+        log.info("update title : " + postForm.getTitle() + " | update content : " + postForm.getContent());
+        postService.modify(findOne, postForm.getTitle(), postForm.getContent());
 
         return "redirect:/post/%d".formatted(id);
     }
 
-    // == 게시글 삭제 ==
     @GetMapping("/{id}/delete")
     public String delete(@PathVariable("id") Long id,
                          Principal principal) {
@@ -187,25 +132,5 @@ public class PostController {
 
         postService.removePost(findOne);
         return "redirect:/post/list";
-    }
-
-    // == 게시글 검색 ==
-    @GetMapping("/search")
-    public String keywordList(Model model,
-                              String keyword,
-                              @RequestParam(value = "page", defaultValue = "0") int page) {
-        Page<Post> paging = postService.getKeywordList(keyword, page);
-        model.addAttribute("paging", paging);
-        model.addAttribute("keyword", keyword);
-        return "/post/list";
-    }
-
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/like/{id}")
-    public String postLike(Principal principal, @PathVariable("id") Long id) {
-        Post post = postService.getPost(id);
-        Member author = memberService.findByNickname(principal.getName());
-        postService.updateLike(post, author);
-        return "redirect:/post/%d".formatted(id);
     }
 }

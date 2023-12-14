@@ -34,7 +34,7 @@ public class SecurityConfig {
                 .formLogin((formLogin) -> formLogin
                         .loginPage("/member/login")
                         .usernameParameter("nickname")
-                        .defaultSuccessUrl("/"))
+                        .defaultSuccessUrl("/post/home"))
 
                 .logout(logout -> logout
                         .logoutRequestMatcher(new AntPathRequestMatcher("/member/logout"))

@@ -5,13 +5,6 @@
         <div th:replace="~{common/form_errors :: formErrorsFragment}"></div>
         <div class="bg-white p-8 rounded-md shadow-md ">
             <h1 class="text-3xl font-bold mb-4">질문 수정</h1>
-
-            <!-- 공개 여부 체크박스 -->
-            <div class="mb-4 checkbox-container">
-                <label class="checkbox-label" for="isPublish">게시물 공개 여부</label>
-                <input type="checkbox" id="isPublish" name="isPublish" th:checked="${postForm.isPublish}">
-            </div>
-
             <div class="mb-4">
                 <label for="title" class="block text-gray-700 text-sm font-bold mb-2">제목</label>
                 <input id="title" type="text" th:field="*{title}"  class="w-full border rounded-md p-2" th:value="${postForm.title}">
@@ -24,6 +17,5 @@
             <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md">작성 완료</button>
         </div>
     </form>
-
 </div>
 </html>
