@@ -38,9 +38,9 @@ public class PostController {
      * */
     @PostMapping("/write")
     public String write(@Valid PostForm postForm,
+                        BindingResult bindingResult,
                         Principal principal,
-                        boolean isPublish,
-                        BindingResult bindingResult) {
+                        boolean isPublish) {
         if (bindingResult.hasErrors()) {
             return "/post/write_form";
         }
