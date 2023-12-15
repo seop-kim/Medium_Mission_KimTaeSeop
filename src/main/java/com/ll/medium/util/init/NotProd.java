@@ -16,15 +16,15 @@ import org.springframework.context.annotation.Profile;
 public class NotProd {
 
     @Bean
-    public ApplicationRunner initNotProdData(MemberService memberService, PostService postService,
-                                             CommentService commentService) {
+    public ApplicationRunner initNotProdData(MemberService memberService,
+                                             PostService postService) {
         return args -> {
             Member member = null;
             Post post = null;
 
             if (memberService.count() == 0) {
                 member = memberService.join("admin", "관리자", "1234");
-                member.roleUpdate(MemberRole.ADMIN);
+                memberService.roleUpdate(member.getId(), MemberRole.ADMIN);
 
                 memberService.join("member", "김태섭", "1234");
             }

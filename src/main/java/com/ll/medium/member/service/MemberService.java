@@ -2,6 +2,7 @@ package com.ll.medium.member.service;
 
 import com.ll.medium.member.entity.Member;
 import com.ll.medium.member.repository.MemberRepository;
+import com.ll.medium.member.role.MemberRole;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -54,6 +55,15 @@ public class MemberService {
         }
 
         return findMember.get();
+    }
+
+    /**
+     * 회원 권한 변경 기능
+     * */
+    @Transactional
+    public void roleUpdate(Long id, MemberRole role) {
+        Member findMember = findById(id);
+        findMember.roleUpdate(role);
     }
 
     /**

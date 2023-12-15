@@ -24,7 +24,7 @@ public class MemberSecurityService implements UserDetailsService {
 
         List<GrantedAuthority> authorities = new ArrayList<>();
 
-        if (findMember.getMemberRole() == MemberRole.ADMIN) { // admin 경우만 분기 처리
+        if (findMember.getMemberRole() == MemberRole.ADMIN) { // admin 경우만 분기 처리]
             authorities.add(new SimpleGrantedAuthority(MemberRole.ADMIN.getRole()));
             return new User(findMember.getNickname(), findMember.getPassword(), authorities);
         }
