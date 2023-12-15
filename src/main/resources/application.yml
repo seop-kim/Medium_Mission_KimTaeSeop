@@ -34,6 +34,3 @@ custom:
   site:
     name: medium
     baseUrl: "http://localhost:${server.port}"
-  tempDirPath: c:/temp/medium_dev/temp
-  genFile:
-    dirPath: c:/temp/medium_dev
