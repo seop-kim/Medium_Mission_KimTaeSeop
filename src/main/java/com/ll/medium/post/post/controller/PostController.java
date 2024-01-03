@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,5 +46,22 @@ public class PostController {
         rq.setAttribute("page", page);
 
         return "domain/post/post/list";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/myList")
+    public String showMyList(
+            @RequestParam(defaultValue = "") String kw,
+            @RequestParam(defaultValue = "1") int page
+    ) {
+        List<Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("id"));
+        Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(sorts));
+
+        Page<Post> postPage = postService.search(rq.getMember(),kw, pageable);
+        rq.setAttribute("postPage", postPage);
+        rq.setAttribute("page", page);
+
+        return "domain/post/post/myList";
     }
 }

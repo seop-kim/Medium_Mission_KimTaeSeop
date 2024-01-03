@@ -15,7 +15,6 @@ public class HomeController {
     @GetMapping("/")
     public String showMain() {
         rq.setAttribute("posts", postService.findTop30ByIsPublishedOrderByIdDesc(true));
-
         return "domain/home/home/main";
     }
 }
