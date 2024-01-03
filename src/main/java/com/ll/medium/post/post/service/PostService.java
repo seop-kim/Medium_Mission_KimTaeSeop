@@ -1,7 +1,7 @@
 package com.ll.medium.post.post.service;
 
 import com.ll.medium.member.member.entity.Member;
-import com.ll.medium.post.post.entity.Post;
+import com.ll.medium.post.domain.entity.Post;
 import com.ll.medium.post.post.repository.PostRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ public class PostService {
     private final PostRepository postRepository;
 
     @Transactional
-    public void write(Member author, String title, String body, boolean isPublished) {
+    public Post write(Member author, String title, String body, boolean isPublished) {
         Post post = Post.builder()
                 .author(author)
                 .title(title)
@@ -25,7 +25,7 @@ public class PostService {
                 .isPublished(isPublished)
                 .build();
 
-        postRepository.save(post);
+        return postRepository.save(post);
     }
 
     public Object findTop30ByIsPublishedOrderByIdDesc(boolean isPublished) {
@@ -37,11 +37,39 @@ public class PostService {
     }
 
     public Page<Post> search(String kw, Pageable pageable) {
-        return postRepository.findByTitleContainingIgnoreCaseOrBodyContainingIgnoreCase(kw, kw, pageable);
+        return postRepository.search(true, kw, pageable);
     }
 
-    public Page<Post> search(Member author, String kw, Pageable pageable) {
-        return postRepository.findByAuthorAndTitleContainingIgnoreCaseOrAuthorAndBodyContainingIgnoreCase(author, kw,
-                author, kw, pageable);
+    public Page<Post> search(Member author, Boolean isPublished, String kw, Pageable pageable) {
+        return postRepository.search(author, isPublished, kw, pageable);
+    }
+
+    public boolean canModify(Member actor, Post post) {
+        return actor.equals(post.getAuthor());
+    }
+
+    @Transactional
+    public void modify(Post post, String title, String body, boolean published) {
+        post.setTitle(title);
+        post.setBody(body);
+        post.setPublished(published);
+    }
+
+    public boolean canDelete(Member actor, Post post) {
+        if (actor.isAdmin()) {
+            return true;
+        }
+
+        return actor.equals(post.getAuthor());
+    }
+
+    @Transactional
+    public void delete(Post post) {
+        postRepository.delete(post);
+    }
+
+    @Transactional
+    public void increaseHit(Post post) {
+        post.increaseHit();
     }
 }

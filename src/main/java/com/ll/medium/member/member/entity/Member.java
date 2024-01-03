@@ -1,10 +1,12 @@
 package com.ll.medium.member.member.entity;
 
+import com.ll.medium.global.jpa.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,18 +29,11 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 @Builder
 @Getter
 @Setter
-@EntityListeners(AuditingEntityListener.class)
-public class Member {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @CreatedDate
-    private LocalDateTime createDate;
-    @LastModifiedDate
-    private LocalDateTime modifyDate;
+public class Member extends BaseEntity {
     private String username;
     private String password;
 
+    @Transient
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
 
@@ -49,5 +44,10 @@ public class Member {
         }
 
         return authorities;
+    }
+
+    public boolean isAdmin() {
+        return getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
     }
 }

@@ -1,5 +1,6 @@
-package com.ll.medium.post.post.entity;
+package com.ll.medium.post.domain.entity;
 
+import com.ll.medium.global.jpa.BaseEntity;
 import com.ll.medium.member.member.entity.Member;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -25,18 +26,16 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Builder
 @Getter
 @Setter
-@EntityListeners(AuditingEntityListener.class)
-public class Post {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @CreatedDate
-    private LocalDateTime createDate;
-    @LastModifiedDate
-    private LocalDateTime modifyDate;
+public class Post extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Member author;
     private String title;
     private String body;
     private boolean isPublished;
+    @Setter(AccessLevel.PROTECTED)
+    private long hit ;
+
+    public void increaseHit() {
+        hit++;
+    }
 }

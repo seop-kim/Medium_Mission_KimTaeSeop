@@ -10,6 +10,16 @@
     <h1>글 내용</h1>
 
     <div>
+        <h3>조회수</h3>
+        <div th:text="${#numbers.formatInteger(post.hit, 3, 'COMMA')}"></div>
+    </div>
+
+    <div>
+        <h3>공개여부</h3>
+        <div th:text="${post.published ? '공개' : '비공개'}"></div>
+    </div>
+
+    <div>
         <h3>제목</h3>
         <div th:text="${post.title}"></div>
     </div>
@@ -23,6 +33,25 @@
 
     <div>
         <button onclick="history.back();">뒤로가기</button>
+        <a th:if="${@postService.canModify(@rq.member, post)}" th:href="|/post/${post.id}/modify|">글 수정</a>
+
+        <form style="display: contents"
+              th:if="${@postService.canDelete(@rq.member, post)}"
+              th:action="|/post/${post.id}/delete|"
+              method="POST"
+        >
+            <input type="hidden" name="_method" value="DELETE">
+            <button onclick="return confirm('정말로 삭제하시겠습니까?');">글 삭제</button>
+        </form>
+
+        <a
+                th:if="${@postService.canDelete(@rq.member, post)}"
+                th:href="|/post/${post.id}/delete|"
+                method="DELETE"
+                onclick="return confirm('정말로 삭제하시겠습니까?');"
+        >
+            글 삭제
+        </a>
     </div>
 </div>
 
