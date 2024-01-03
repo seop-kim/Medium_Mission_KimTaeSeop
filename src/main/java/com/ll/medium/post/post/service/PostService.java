@@ -3,6 +3,8 @@ package com.ll.medium.post.post.service;
 import com.ll.medium.member.member.entity.Member;
 import com.ll.medium.post.domain.entity.Post;
 import com.ll.medium.post.post.repository.PostRepository;
+import com.ll.medium.post.postComment.entity.PostComment;
+import com.ll.medium.post.postComment.repository.PostCommentRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class PostService {
     private final PostRepository postRepository;
+    private final PostCommentRepository postCommentRepository;
 
     @Transactional
     public Post write(Member author, String title, String body, boolean isPublished) {
@@ -44,7 +47,29 @@ public class PostService {
         return postRepository.search(author, isPublished, kw, pageable);
     }
 
+    public boolean canLike(Member actor, Post post) {
+        if (actor == null) return false;
+
+        return !post.hasLike(actor);
+    }
+
+    public boolean canCancelLike(Member actor, Post post) {
+        if (actor == null) return false;
+
+        return post.hasLike(actor);
+    }
+
     public boolean canModify(Member actor, Post post) {
+        if (actor == null) return false;
+
+        return actor.equals(post.getAuthor());
+    }
+
+    public boolean canDelete(Member actor, Post post) {
+        if (actor == null) return false;
+
+        if (actor.isAdmin()) return true;
+
         return actor.equals(post.getAuthor());
     }
 
@@ -55,14 +80,6 @@ public class PostService {
         post.setPublished(published);
     }
 
-    public boolean canDelete(Member actor, Post post) {
-        if (actor.isAdmin()) {
-            return true;
-        }
-
-        return actor.equals(post.getAuthor());
-    }
-
     @Transactional
     public void delete(Post post) {
         postRepository.delete(post);
@@ -71,5 +88,48 @@ public class PostService {
     @Transactional
     public void increaseHit(Post post) {
         post.increaseHit();
+    }
+
+    @Transactional
+    public void like(Member actor, Post post) {
+        post.addLike(actor);
+    }
+
+    @Transactional
+    public void cancelLike(Member actor, Post post) {
+        post.deleteLike(actor);
+    }
+
+    @Transactional
+    public PostComment writeComment(Member actor, Post post, String body) {
+        return post.writeComment(actor, body);
+    }
+
+    public boolean canModifyComment(Member actor, PostComment comment) {
+        if (actor == null) return false;
+
+        return actor.equals(comment.getAuthor());
+    }
+
+    public boolean canDeleteComment(Member actor, PostComment comment) {
+        if (actor == null) return false;
+
+        if (actor.isAdmin()) return true;
+
+        return actor.equals(comment.getAuthor());
+    }
+
+    public Optional<PostComment> findCommentById(long id) {
+        return postCommentRepository.findCommentById(id);
+    }
+
+    @Transactional
+    public void modifyComment(PostComment postComment, String body) {
+        postComment.setBody(body);
+    }
+
+    @Transactional
+    public void deleteComment(PostComment postComment) {
+        postCommentRepository.delete(postComment);
     }
 }
