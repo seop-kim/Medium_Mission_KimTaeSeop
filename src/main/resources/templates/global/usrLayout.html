@@ -3,20 +3,23 @@
 
 <head>
     <title layout:title-pattern="$CONTENT_TITLE - $LAYOUT_TITLE" th:text="${@appConfig.siteName}"></title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 
-<body>
+<body class="bg-gray-100">
 
-<header layout:fragment="header">
+<header layout:fragment="header" class="bg-blue-500 p-4 text-white flex justify-between items-center">
     <h1 th:text="|${@appConfig.siteName}|"></h1>
 
-    <a href="/">홈</a>
-    <a href="/post/list">글 목록</a>
-    <a th:if="${@rq.admin}" href="/adm">관리자 홈</a>
-    <a th:if="${@rq.login}" href="/post/write">글 쓰기</a>
-    <a th:if="${@rq.login}" href="/member/logout">로그아웃</a>
-    <a th:if="${@rq.logout}" href="/member/login">로그인</a>
-    <a th:if="${@rq.logout}" href="/member/join">회원가입</a>
+    <nav>
+        <a href="/" class="hover:underline">홈</a>
+        <a href="/post/list" class="hover:underline">글 목록</a>
+        <a th:if="${@rq.admin}" href="/adm" class="hover:underline">관리자 홈</a>
+        <a th:if="${@rq.login}" href="/post/write" class="hover:underline">글 쓰기</a>
+        <a th:if="${@rq.login}" href="/member/logout" class="hover:underline">로그아웃</a>
+        <a th:if="${@rq.logout}" href="/member/login" class="hover:underline">로그인</a>
+        <a th:if="${@rq.logout}" href="/member/join" class="hover:underline">회원가입</a>
+    </nav>
 </header>
 
 </body>

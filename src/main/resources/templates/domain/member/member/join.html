@@ -4,15 +4,14 @@
     <title>회원가입</title>
 </head>
 
-<body>
-<div layout:fragment="content">
-    <h1>회원가입</h1>
+<body class="bg-gray-100">
 
+<div layout:fragment="content" class="container mx-auto mt-8">
     <script>
         function submitJoinForm(form) {
             form.username.value = form.username.value.trim();
 
-            if (form.username.value.length == 0) {
+            if (form.username.value.length === 0) {
                 toastWarning('사용자 ID를 입력해주세요.');
                 form.username.focus();
                 return;
@@ -20,7 +19,7 @@
 
             form.password.value = form.password.value.trim();
 
-            if (form.password.value.length == 0) {
+            if (form.password.value.length === 0) {
                 toastWarning('비밀번호를 입력해주세요.');
                 form.password.focus();
                 return;
@@ -28,13 +27,13 @@
 
             form.passwordConfirm.value = form.passwordConfirm.value.trim();
 
-            if (form.passwordConfirm.value.length == 0) {
+            if (form.passwordConfirm.value.length === 0) {
                 toastWarning('비밀번호 확인을 입력해주세요.');
                 form.passwordConfirm.focus();
                 return;
             }
 
-            if (form.password.value != form.passwordConfirm.value) {
+            if (form.password.value !== form.passwordConfirm.value) {
                 toastWarning('비밀번호가 일치하지 않습니다.');
                 form.passwordConfirm.focus();
                 return;
@@ -44,23 +43,32 @@
         }
     </script>
 
-    <form th:action method="POST" onsubmit="submitJoinForm(this); return false;">
-        <div>
-            <label>사용자 ID</label>
-            <input type="text" name="username">
+    <form th:action method="POST" onsubmit="submitJoinForm(this); return false;"
+          class="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
+        <h1 class="text-3xl font-bold mb-6">회원가입</h1>
+
+        <div class="mb-4">
+            <label for="username" class="block text-sm font-medium text-gray-600">사용자 ID</label>
+            <input type="text" name="username" id="username"
+                   class="mt-1 p-2 border rounded-md w-full focus:outline-none focus:ring focus:border-blue-300">
         </div>
 
-        <div>
-            <label>비밀번호</label>
-            <input type="password" name="password">
+        <div class="mb-4">
+            <label for="password" class="block text-sm font-medium text-gray-600">비밀번호</label>
+            <input type="password" name="password" id="password"
+                   class="mt-1 p-2 border rounded-md w-full focus:outline-none focus:ring focus:border-blue-300">
         </div>
 
-        <div>
-            <label>비밀번호 확인</label>
-            <input type="password" name="passwordConfirm">
+        <div class="mb-4">
+            <label for="passwordConfirm" class="block text-sm font-medium text-gray-600">비밀번호 확인</label>
+            <input type="password" name="passwordConfirm" id="passwordConfirm"
+                   class="mt-1 p-2 border rounded-md w-full focus:outline-none focus:ring focus:border-blue-300">
         </div>
 
-        <button type="submit">회원가입</button>
+        <button type="submit"
+                class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300">
+            회원가입
+        </button>
     </form>
 </div>
 </body>

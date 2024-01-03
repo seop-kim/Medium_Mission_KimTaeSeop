@@ -4,16 +4,23 @@
     <title>홈</title>
 </head>
 
-<div layout:fragment="content">
-    <h1>메인</h1>
+<body class="bg-gray-100">
 
-    <h2>최신 게시물</h2>
+<div layout:fragment="content" class="container mx-auto mt-8">
+    <h2 class="text-2xl font-semibold mb-4">최신 게시물</h2>
 
-    <ul>
-        <li th:each="post : ${posts}">
-            <a th:href="|/post/${post.id}|" th:text="${post.title}"></a>
-        </li>
-    </ul>
+    <div class="grid grid-cols-5 gap-4">
+        <th:block th:each="post : ${posts}">
+            <div class="bg-white p-4 rounded shadow-md mb-4">
+                <a th:href="|/post/${post.id}|" class="text-blue-500 hover:underline">
+                    <h3 class="text-lg font-semibold mb-2" th:text="${post.title}"></h3>
+                </a>
+            </div>
+        </th:block>
+    </div>
+
 </div>
+
+</body>
 
 </html>

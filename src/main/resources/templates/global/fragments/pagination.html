@@ -1,52 +1,62 @@
 <html>
 <head>
 </head>
-<body>
+<body class="bg-gray-100">
 
 <th:block th:fragment="pagination(itemPage, queryStrBase, pageArmSize)">
+    <!-- 테일윈드 스타일 추가 -->
     <style>
+        .pagination a {
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+            color: #4a5568;
+            background-color: #cbd5e0;
+            border-radius: 0.25rem;
+            transition: background-color 0.3s;
+        }
+
+        .pagination a:hover {
+            background-color: #a0aec0;
+        }
+
         .pagination .active {
-            color: red;
+            background-color: #48bb78;
+            color: white;
+        }
+
+        .pagination .ellipsis {
+            pointer-events: none;
         }
     </style>
 
-    <div class="pagination"
+    <div class="pagination flex gap-2"
          th:if="${itemPage.totalPages > 0}"
-         style="display:flex; gap:10px;"
-         th:with="page = ${itemPage.number + 1}"
-    >
+         th:with="page=${itemPage.number + 1}">
 
-        <a th:href="|?${queryStrBase}&page=1|"
-           th:classappend="${page == 1} ? 'active'"
-           th:text="1"
-        >
-        </a>
+        <a th:href="|?${queryStrBase}&page=1|" th:classappend="${page == 1} ? 'active'" th:text="1"></a>
 
         <th:block th:if="${itemPage.totalPages > 1}">
-            <a
-                    th:href="|?${queryStrBase}&page=${page - pageArmSize - 1}|"
-                    th:if="${page - pageArmSize > 2}"
+            <a th:href="|?${queryStrBase}&page=${page - pageArmSize - 1}|"
+               th:if="${page - pageArmSize > 2}"
+               class="ellipsis"
             >...</a>
 
             <th:block th:if="${itemPage.totalPages > 2}">
-                <a
-                        th:each="num : ${#numbers.sequence(2, itemPage.totalPages - 1)}"
-                        th:if="${num >= page - pageArmSize and num <= page + pageArmSize}"
-                        th:href="|?${queryStrBase}&page=${num}|"
-                        th:text="${num}"
-                        th:classappend="${num == page ? 'active' : ''}"
+                <a th:each="num : ${#numbers.sequence(2, itemPage.totalPages - 1)}"
+                   th:if="${num >= page - pageArmSize and num <= page + pageArmSize}"
+                   th:href="|?${queryStrBase}&page=${num}|"
+                   th:text="${num}"
+                   th:classappend="${num == page ? 'active' : ''}"
                 ></a>
             </th:block>
 
-            <a
-                    th:href="|?${queryStrBase}&page=${page + pageArmSize + 1}|"
-                    th:if="${page + pageArmSize < itemPage.totalPages - 1}"
+            <a th:href="|?${queryStrBase}&page=${page + pageArmSize + 1}|"
+               th:if="${page + pageArmSize < itemPage.totalPages - 1}"
+               class="ellipsis"
             >...</a>
 
             <a th:href="|?${queryStrBase}&page=${itemPage.totalPages}|"
-               th:classappend="${page == itemPage.totalPages} ? 'active'"
-               th:text="${itemPage.totalPages}"
-            ></a>
+               th:classappend="${page == itemPage.totalPages} ? 'active'" th:text="${itemPage.totalPages}"></a>
         </th:block>
     </div>
 </th:block>

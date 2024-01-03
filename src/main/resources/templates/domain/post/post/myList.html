@@ -1,17 +1,18 @@
 <html layout:decorate="~{global/usrLayout}">
 
 <head>
-  <title th:text="|내글 목록|"></title>
+  <title th:text="|내 글 목록|"></title>
+
 </head>
 
-<body>
+<body class="bg-gray-100">
 
-<div layout:fragment="content">
-  <h1>내글 목록</h1>
+<div layout:fragment="content" class="container mx-auto mt-8">
+  <h1 class="text-3xl font-bold text-blue-500 mb-6">글 목록</h1>
 
-  <ul>
-    <li th:each="post : ${postPage.content}">
-      <a th:href="|/post/${post.id}|">
+  <ul class="grid gap-4">
+    <li th:each="post : ${postPage.content}" class="bg-white p-4 rounded shadow-md">
+      <a th:href="@{|/post/${post.id}|}" class="text-blue-500 hover:underline">
         <span th:text="${post.id}"></span>
         /
         <span th:text="${post.title}"></span>
@@ -21,11 +22,9 @@
     </li>
   </ul>
 
-  <th:block th:with="queryStrBase = ${@rq.getCurrentQueryStringWithoutParam('page')}">
-    <th:block th:replace="global/fragments/pagination :: pagination(${postPage}, ${queryStrBase}, 1)">
-
-    </th:block>
-  </th:block>
+  <div th:with="queryStrBase = ${@rq.getCurrentQueryStringWithoutParam('page')}" class="mt-8">
+    <div th:replace="global/fragments/pagination :: pagination(${postPage}, ${queryStrBase}, 1)"></div>
+  </div>
 </div>
 
 </body>
