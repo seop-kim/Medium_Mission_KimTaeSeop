@@ -45,7 +45,7 @@ public class NotProd {
         Member memberUser4 = memberService.join("user4", "1234").getData();
 
         Post post1 = postService.write(memberUser1, "제목 1", "내용 1", true, false);
-        Post post2 = postService.write(memberUser1, "제목 2", "내용 2", true, true);
+        Post post2 = postService.write(memberUser1, "제목 2", "내용 2", true, false);
         Post post3 = postService.write(memberUser1, "제목 3", "내용 3", false, false);
         Post post4 = postService.write(memberUser1, "제목 4", "내용 4", true, false);
 
@@ -56,8 +56,9 @@ public class NotProd {
             postService.write(memberUser3, "제목 " + i, "내용 " + i, true, false);
         });
 
-        Post post7 = postService.write(memberUser2, "제목 51", "내용 51", true, true);
+        Post post7 = postService.write(memberUser2, "제목 51", "내용 51", true, false);
 
+        memberService.membershipUpdate(memberUser1.getId(), true);
         postService.like(memberUser2, post1);
         postService.like(memberUser3, post1);
         postService.like(memberUser4, post1);

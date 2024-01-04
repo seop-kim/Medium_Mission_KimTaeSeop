@@ -57,7 +57,9 @@ public class Rq {
     }
 
     public String redirectOrBack(RsData<?> rs, String path) {
-        if (rs.isFail()) return historyBack(rs.getMsg());
+        if (rs.isFail()) {
+            return historyBack(rs.getMsg());
+        }
 
         return redirect(path, rs.getMsg());
     }
@@ -79,8 +81,21 @@ public class Rq {
         return !isLogin();
     }
 
+    public boolean isMembership() {
+        if (isLogout()) {
+            return false;
+        }
+
+        return getUser()
+                .getAuthorities()
+                .stream()
+                .anyMatch(it -> it.getAuthority().equals("ROLE_PAID"));
+    }
+
     public boolean isAdmin() {
-        if (isLogout()) return false;
+        if (isLogout()) {
+            return false;
+        }
 
         return getUser()
                 .getAuthorities()
@@ -105,9 +120,11 @@ public class Rq {
     }
 
     public Member getMember() {
-        if ( isLogout() ) return null;
+        if (isLogout()) {
+            return null;
+        }
 
-        if ( member == null ) {
+        if (member == null) {
             member = entityManager.getReference(Member.class, getUser().getId());
         }
 

@@ -1,13 +1,9 @@
 package com.ll.medium.member.member.entity;
 
 import com.ll.medium.global.jpa.BaseEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Transient;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -17,9 +13,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -33,6 +26,9 @@ public class Member extends BaseEntity {
     private String username;
     private String password;
 
+    @Column(columnDefinition = "boolean default false")
+    private boolean isPaid;
+
     @Transient
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
@@ -41,6 +37,10 @@ public class Member extends BaseEntity {
 
         if (List.of("system", "admin").contains(username)) {
             authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        }
+
+        if (isPaid) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_PAID"));
         }
 
         return authorities;

@@ -30,14 +30,18 @@
         <div class="text-gray-800 text-xl font-bold" th:text="${post.title}"></div>
     </div>
 
-    <div class="mb-8">
+    <div class="mb-8" th:if="${post.paid and @rq.isMembership()}">
         <h3 class="text-lg font-semibold">내용</h3>
         <div class="text-gray-700 whitespace-pre-wrap" th:text="${post.body}"></div>
     </div>
 
+    <div th:if="${post.paid and not @rq.isMembership()}">
+        <p>유료 회원 글 입니다</p>
+    </div>
+
     <hr class="my-8">
 
-    <div class="mb-4">
+    <div class="mb-4" th:if="${post.paid and @rq.isMembership()}">
         <a th:if="${@postService.canModify(@rq.member, post)}"
            th:href="|/post/${post.id}/modify|"
            class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300 mr-2">
@@ -67,7 +71,7 @@
         </form>
     </div>
 
-    <th:block th:if="${@rq.login}">
+    <th:block th:if="${post.paid and @rq.isMembership()}">
         <div class="mb-4">
             <h3 class="text-lg font-semibold">댓글 작성</h3>
             <form th:action="|/post/${post.id}/comment/write|" method="POST">
@@ -80,7 +84,7 @@
         </div>
     </th:block>
 
-    <div class="mb-4">
+    <div class="mb-4" th:if="${post.paid and @rq.isMembership()}">
         <h3 class="text-lg font-semibold">댓글 목록</h3>
         <ul class="list-disc ml-6 mt-4">
             <li th:each="postComment : ${post.comments}" th:id="|postComment-${postComment.id}|"

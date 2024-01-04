@@ -42,9 +42,9 @@
       <input type="checkbox" name="published" class="mr-2" th:checked="${post.published}">
     </div>
 
-    <div class="mb-4">
-      <label class="block text-gray-700">유료글?</label>
-      <input type="checkbox" name="paid" class="mr-2" th:checked="${post.paid}">
+    <div class="mb-4" th:if="${@rq.isMembership()}">
+      <label class="block text-sm font-medium text-gray-600">유료글?</label>
+      <input type="checkbox" name="paid" class="mt-1">
     </div>
 
     <div class="mb-4">

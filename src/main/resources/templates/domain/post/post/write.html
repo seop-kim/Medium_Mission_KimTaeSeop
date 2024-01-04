@@ -39,7 +39,7 @@
             <input type="checkbox" name="published" class="mt-1" checked>
         </div>
 
-        <div class="mb-4">
+        <div class="mb-4" th:if="${@rq.isMembership()}">
             <label class="block text-sm font-medium text-gray-600">유료글?</label>
             <input type="checkbox" name="paid" class="mt-1">
         </div>

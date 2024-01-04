@@ -1,5 +1,6 @@
 package com.ll.medium.global.init;
 
+import com.ll.medium.member.member.entity.Member;
 import com.ll.medium.member.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,10 +19,13 @@ public class All {
     @Order(2)
     public ApplicationRunner initAll() {
         return args -> {
-            if (memberService.findByUsername("system").isPresent()) return;
+            if (memberService.findByUsername("system").isPresent()) {
+                return;
+            }
 
             memberService.join("system", "1234");
-            memberService.join("admin", "1234");
+            Member admin = memberService.join("admin", "1234").getData();
+            memberService.membershipUpdate(admin.getId(), true);
         };
     }
 }
