@@ -44,17 +44,19 @@ public class NotProd {
         Member memberUser3 = memberService.join("user3", "1234").getData();
         Member memberUser4 = memberService.join("user4", "1234").getData();
 
-        Post post1 = postService.write(memberUser1, "제목 1", "내용 1", true);
-        Post post2 = postService.write(memberUser1, "제목 2", "내용 2", true);
-        Post post3 = postService.write(memberUser1, "제목 3", "내용 3", false);
-        Post post4 = postService.write(memberUser1, "제목 4", "내용 4", true);
+        Post post1 = postService.write(memberUser1, "제목 1", "내용 1", true, false);
+        Post post2 = postService.write(memberUser1, "제목 2", "내용 2", true, true);
+        Post post3 = postService.write(memberUser1, "제목 3", "내용 3", false, false);
+        Post post4 = postService.write(memberUser1, "제목 4", "내용 4", true, false);
 
-        Post post5 = postService.write(memberUser2, "제목 5", "내용 5", true);
-        Post post6 = postService.write(memberUser2, "제목 6", "내용 6", false);
+        Post post5 = postService.write(memberUser2, "제목 5", "내용 5", true, false);
+        Post post6 = postService.write(memberUser2, "제목 6", "내용 6", false, false);
 
         IntStream.rangeClosed(7, 50).forEach(i -> {
-            postService.write(memberUser3, "제목 " + i, "내용 " + i, true);
+            postService.write(memberUser3, "제목 " + i, "내용 " + i, true, false);
         });
+
+        Post post7 = postService.write(memberUser2, "제목 51", "내용 51", true, true);
 
         postService.like(memberUser2, post1);
         postService.like(memberUser3, post1);

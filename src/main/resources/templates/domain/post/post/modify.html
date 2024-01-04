@@ -43,6 +43,11 @@
     </div>
 
     <div class="mb-4">
+      <label class="block text-gray-700">유료글?</label>
+      <input type="checkbox" name="paid" class="mr-2" th:checked="${post.paid}">
+    </div>
+
+    <div class="mb-4">
       <label class="block text-gray-700">제목</label>
       <input type="text" name="title" th:value="${post.title}"
              class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:border-blue-300">

@@ -13,7 +13,7 @@
     <ul class="grid gap-4">
         <li th:each="post : ${postPage.content}" class="bg-white p-4 rounded shadow-md">
             <a th:href="@{|/post/${post.id}|}" class="text-blue-500 hover:underline">
-<!--                <span th:text="${post.id}"></span>-->
+                <span th:text="${post.id}"></span>
                 <span th:text="${post.title}"></span>
                 /
                 <span th:text="${post.likes.size}" class="right-0"></span>

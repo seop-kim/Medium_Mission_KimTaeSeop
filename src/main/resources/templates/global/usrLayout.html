@@ -16,6 +16,7 @@
         <a href="/post/list" class="hover:underline">글 목록</a>
         <a th:if="${@rq.admin}" href="/adm" class="hover:underline">관리자 홈</a>
         <a th:if="${@rq.login}" href="/post/write" class="hover:underline">글 쓰기</a>
+        <a th:if="${@rq.login}" href="/post/myList" class="hover:underline">내글 목록</a>
         <a th:if="${@rq.login}" href="/member/logout" class="hover:underline">로그아웃</a>
         <a th:if="${@rq.logout}" href="/member/login" class="hover:underline">로그인</a>
         <a th:if="${@rq.logout}" href="/member/join" class="hover:underline">회원가입</a>

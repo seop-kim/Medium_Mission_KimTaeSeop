@@ -4,6 +4,7 @@ import com.ll.medium.global.exception.GlobalException;
 import com.ll.medium.global.rq.Rq;
 import com.ll.medium.post.domain.entity.Post;
 import com.ll.medium.post.post.service.PostService;
+import com.ll.medium.post.postComment.controller.PostCommentController;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import java.util.ArrayList;
@@ -78,16 +79,6 @@ public class PostController {
         return "domain/post/post/myList";
     }
 
-    @Getter
-    @Setter
-    public static class WriteForm {
-        @NotBlank
-        private String title;
-        @NotBlank
-        private String body;
-        private boolean isPublished;
-    }
-
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/write")
     public String showWrite() {
@@ -97,7 +88,7 @@ public class PostController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/write")
     public String write(@Valid WriteForm form) {
-        Post post = postService.write(rq.getMember(), form.getTitle(), form.getBody(), form.isPublished());
+        Post post = postService.write(rq.getMember(), form.getTitle(), form.getBody(), form.isPublished(), form.isPaid());
 
         return rq.redirect("/post/" + post.getId(), post.getId() + "번 글이 작성되었습니다.");
     }
@@ -122,6 +113,7 @@ public class PostController {
         @NotBlank
         private String body;
         private boolean isPublished;
+        private boolean isPaid;
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -131,7 +123,7 @@ public class PostController {
 
         if (!postService.canModify(rq.getMember(), post)) throw new GlobalException("403-1", "권한이 없습니다.");
 
-        postService.modify(post, form.getTitle(), form.getBody(), form.isPublished());
+        postService.modify(post, form.getTitle(), form.getBody(), form.isPublished(), form.isPaid());
 
         return rq.redirect("/post/" + post.getId(), post.getId() + "번 글이 수정되었습니다.");
     }
@@ -170,5 +162,16 @@ public class PostController {
         postService.cancelLike(rq.getMember(), post);
 
         return rq.redirect("/post/" + post.getId(), post.getId() + "번 글을 추천취소하였습니다.");
+    }
+
+    @Getter
+    @Setter
+    public static class WriteForm {
+        @NotBlank
+        private String title;
+        @NotBlank
+        private String body;
+        private boolean isPublished;
+        private boolean isPaid;
     }
 }
