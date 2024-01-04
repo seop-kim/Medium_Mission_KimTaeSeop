@@ -5,6 +5,7 @@ import com.ll.medium.post.domain.entity.Post;
 import com.ll.medium.post.post.repository.PostRepository;
 import com.ll.medium.post.postComment.entity.PostComment;
 import com.ll.medium.post.postComment.repository.PostCommentRepository;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

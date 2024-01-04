@@ -3,6 +3,7 @@ package com.ll.medium.member.member.service;
 import com.ll.medium.global.rsData.RsData;
 import com.ll.medium.member.member.entity.Member;
 import com.ll.medium.member.member.repository.MemberRepository;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,8 +38,21 @@ public class MemberService {
         member.setPaid(membership);
     }
 
+    public Optional<Member> findById(long id) {
+        return memberRepository.findById(id);
+    }
+
+    @Transactional
+    public void updateMembership(Member member, boolean membership) {
+        member.setPaid(membership);
+    }
+
     public Optional<Member> findByUsername(String username) {
         return memberRepository.findByUsername(username);
+    }
+
+    public List<Member> findAll() {
+        return memberRepository.findAll();
     }
 
     public long count() {
