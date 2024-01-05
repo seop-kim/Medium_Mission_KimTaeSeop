@@ -20,16 +20,16 @@ public class MemberSecurityService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String nickname) throws UsernameNotFoundException {
-        Member findOne = memberService.findByNickname(nickname);
+        Member findMember = memberService.findByNickname(nickname);
 
         List<GrantedAuthority> authorities = new ArrayList<>();
 
-        if (findOne.getMemberRole() == MemberRole.ADMIN) { // admin 경우만 분기 처리
+        if (findMember.getMemberRole() == MemberRole.ADMIN) { // admin 경우만 분기 처리]
             authorities.add(new SimpleGrantedAuthority(MemberRole.ADMIN.getRole()));
-            return new User(findOne.getNickname(), findOne.getPassword(), authorities);
+            return new User(findMember.getNickname(), findMember.getPassword(), authorities);
         }
 
         authorities.add(new SimpleGrantedAuthority(MemberRole.MEMBER.getRole()));
-        return new User(findOne.getNickname(), findOne.getPassword(), authorities);
+        return new User(findMember.getNickname(), findMember.getPassword(), authorities);
     }
 }

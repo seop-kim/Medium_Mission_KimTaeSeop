@@ -1,16 +1,19 @@
 package com.ll.medium.member.controller;
 
+import com.ll.medium.member.entity.Member;
 import com.ll.medium.member.service.MemberService;
 import com.ll.medium.member.util.MemberJoinForm;
 import jakarta.validation.Valid;
+import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+
 
 @RequestMapping("/member")
 @RequiredArgsConstructor
@@ -18,13 +21,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class MemberController {
     private final MemberService memberService;
 
-    // == 회원가입 폼 ==
+    /**
+     * 회원가입 폼 이동
+     */
     @GetMapping("/join")
     public String joinForm(MemberJoinForm memberJoinForm) {
         return "/member/joinForm";
     }
 
-    // == 회원가입 ==
+
+    /**
+     * 회원가입
+     */
     @PostMapping("/join")
     public String join(@Valid MemberJoinForm memberJoinForm,
                        BindingResult bindingResult) {
@@ -56,9 +64,23 @@ public class MemberController {
         return "/member/login";
     }
 
-    // == 로그인 폼 ==
+    /**
+     * 로그인 폼 이동
+     */
     @GetMapping("/login")
     public String login() {
         return "/member/login";
+    }
+
+
+    /**
+     * 마이페이지 이동
+     */
+    @GetMapping("/mypage")
+    public String myPage(Principal principal,
+                         Model model) {
+        Member findMember = memberService.findByNickname(principal.getName());
+        model.addAttribute("member", findMember);
+        return "/member/myPage";
     }
 }
