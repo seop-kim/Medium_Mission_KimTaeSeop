@@ -1,0 +1,67 @@
+<html layout:decorate="~{global/usrLayout}">
+
+<head>
+    <title>글 쓰기</title>
+</head>
+
+<body class="bg-gray-100">
+<div layout:fragment="content" class="container mx-auto mt-8">
+
+    <h1 class="text-3xl font-bold mb-6">글 쓰기</h1>
+
+    <script>
+        function submitWriteForm(form) {
+            form.title.value = form.title.value.trim();
+
+            if (form.title.value.length === 0) {
+                toastWarning('제목을 입력해주세요.');
+                form.title.focus();
+                return;
+            }
+
+            form.body.value = form.body.value.trim();
+
+            if (form.body.value.length === 0) {
+                toastWarning('내용을 입력해주세요.');
+                form.body.focus();
+                return;
+            }
+
+            form.submit();
+        }
+    </script>
+
+    <form th:action method="POST" onsubmit="submitWriteForm(this); return false;"
+          class="bg-white p-6 rounded-lg shadow-md">
+
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-600">공개</label>
+            <input type="checkbox" name="published" class="mt-1" checked>
+        </div>
+
+        <div class="mb-4" th:if="${@rq.isMembership()}">
+            <label class="block text-sm font-medium text-gray-600">유료글?</label>
+            <input type="checkbox" name="paid" class="mt-1">
+        </div>
+
+        <div class="mb-4">
+            <label for="title" class="block text-sm font-medium text-gray-600">제목</label>
+            <input type="text" name="title" id="title"
+                   class="mt-1 p-2 border rounded-md w-full focus:outline-none focus:ring focus:border-blue-300">
+        </div>
+
+        <div class="mb-4">
+            <label for="body" class="block text-sm font-medium text-gray-600">내용</label>
+            <textarea name="body" id="body" rows="5"
+                      class="mt-1 p-2 border rounded-md w-full focus:outline-none focus:ring focus:border-blue-300"></textarea>
+        </div>
+
+        <button type="submit"
+                class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300">
+            글쓰기
+        </button>
+    </form>
+</div>
+</body>
+
+</html>

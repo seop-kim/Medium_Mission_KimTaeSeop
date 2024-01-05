@@ -1,0 +1,76 @@
+<html layout:decorate="~{global/usrLayout}">
+
+<head>
+  <title>댓글 수정</title>
+</head>
+
+<body class="bg-gray-100">
+
+<div layout:fragment="content" class="container mx-auto mt-8">
+
+  <h1 class="text-3xl font-bold mb-6">댓글 수정</h1>
+
+  <h3 class="text-lg font-semibold mb-2">글 내용</h3>
+
+  <div class="mb-4">
+    <h3 class="text-gray-700">조회수</h3>
+    <div class="text-gray-900" th:text="${#numbers.formatInteger(post.hit, 3, 'COMMA')}"></div>
+  </div>
+
+  <div class="mb-4">
+    <h3 class="text-gray-700">추천수</h3>
+    <div class="text-gray-900" th:text="${#numbers.formatInteger(post.likes.size, 3, 'COMMA')}"></div>
+  </div>
+
+  <div class="mb-4">
+    <h3 class="text-gray-700">공개여부</h3>
+    <div class="text-gray-900" th:text="${post.published ? '공개' : '비공개'}"></div>
+  </div>
+
+  <div class="mb-4">
+    <h3 class="text-gray-700">제목</h3>
+    <div class="text-gray-900" th:text="${post.title}"></div>
+  </div>
+
+  <div class="mb-4">
+    <h3 class="text-gray-700">내용</h3>
+    <div class="text-gray-900 whitespace-pre-wrap" th:text="${post.body}"></div>
+  </div>
+
+  <script>
+    function submitModifyForm(form) {
+      form.body.value = form.body.value.trim();
+
+      if (form.body.value.length === 0) {
+        toastWarning('내용을 입력해주세요.');
+        form.body.focus();
+        return;
+      }
+
+      form.submit();
+    }
+  </script>
+
+  <h1 class="text-2xl font-semibold mb-4">댓글 수정 폼</h1>
+
+  <form th:action method="POST" onsubmit="submitModifyForm(this); return false;"
+        class="bg-white p-6 rounded shadow-md">
+
+    <input type="hidden" name="_method" value="PUT">
+
+    <div class="mb-4">
+      <label class="block text-gray-700">내용</label>
+      <textarea name="body" th:text="${postComment.body}"
+                class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:border-blue-300"></textarea>
+    </div>
+
+    <button type="submit"
+            class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300">
+      댓글 수정
+    </button>
+  </form>
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,59 @@
+<html layout:decorate="~{global/usrLayout}">
+
+<head>
+    <title>로그인</title>
+</head>
+
+<body class="bg-gray-100">
+
+<div layout:fragment="content" class="container mx-auto mt-8">
+
+
+    <script>
+        function submitLoginForm(form) {
+            form.username.value = form.username.value.trim();
+
+            if (form.username.value.length === 0) {
+                toastWarning('사용자 ID를 입력해주세요.');
+                form.username.focus();
+                return;
+            }
+
+            form.password.value = form.password.value.trim();
+
+            if (form.password.value.length === 0) {
+                toastWarning('비밀번호를 입력해주세요.');
+                form.password.focus();
+                return;
+            }
+
+            form.submit();
+        }
+    </script>
+
+    <form th:action method="POST" onsubmit="submitLoginForm(this); return false;"
+          class="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
+        <h1 class="text-3xl font-bold mb-6">로그인</h1>
+
+        <div class="mb-4">
+            <label for="username" class="block text-sm font-medium text-gray-600">사용자 ID</label>
+            <input type="text" name="username" id="username"
+                   class="mt-1 p-2 border rounded-md w-full focus:outline-none focus:ring focus:border-blue-300">
+        </div>
+
+        <div class="mb-4">
+            <label for="password" class="block text-sm font-medium text-gray-600">비밀번호</label>
+            <input type="password" name="password" id="password"
+                   class="mt-1 p-2 border rounded-md w-full focus:outline-none focus:ring focus:border-blue-300">
+        </div>
+
+        <button type="submit"
+                class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300">
+            로그인
+        </button>
+    </form>
+</div>
+
+</body>
+
+</html>

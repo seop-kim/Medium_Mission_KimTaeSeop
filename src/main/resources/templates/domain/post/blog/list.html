@@ -1,0 +1,37 @@
+<html layout:decorate="~{global/usrLayout}">
+
+<head>
+    <title th:text="|글 목록|"></title>
+
+</head>
+
+<body class="bg-gray-100">
+
+<div layout:fragment="content" class="container mx-auto mt-8">
+    <h1 class="text-3xl font-bold text-blue-500 mb-6">글 목록</h1>
+
+    <ul class="grid gap-4">
+        <li th:each="post : ${postPage.content}" class="bg-white p-4 rounded shadow-md flex items-center justify-between">
+            <a th:href="@{|/post/${post.id}|}" class="text-blue-500 hover:underline flex-grow">
+                <!--                <span th:text="${post.id}" class="text-sm text-gray-500"></span>-->
+                <span th:text="${post.title}" class="text-lg font-semibold mt-1"></span>
+                <span th:text="${post.likes.size}" class="text-sm text-red-700 ml-2"></span>
+                <span th:text="${post.author.username} + ' | ' + ${#temporals.format(post.createDate, 'yyyy.MM.dd')}" class="text-sm text-gray-600 block"></span>
+                <!--                <span th:text="${#temporals.format(post.createDate, 'yyyy.MM.dd')}" class="text-sm text-gray-500"></span>-->
+            </a>
+            <span th:if="${post.isPaid}"
+                  class="bg-yellow-500 text-white text-xs font-semibold py-1 px-2 rounded-full">유료</span>
+            <span th:if="${not post.isPaid}"
+                  class="bg-green-500 text-white text-xs font-semibold py-1 px-2 rounded-full">무료</span>
+        </li>
+    </ul>
+
+
+    <div th:with="queryStrBase = ${@rq.getCurrentQueryStringWithoutParam('page')}" class="mt-8">
+        <div th:replace="global/fragments/pagination :: pagination(${postPage}, ${queryStrBase}, 1)"></div>
+    </div>
+</div>
+
+</body>
+
+</html>

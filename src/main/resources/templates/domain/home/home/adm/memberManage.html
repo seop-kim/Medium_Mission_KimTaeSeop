@@ -1,0 +1,37 @@
+<html layout:decorate="~{global/admLayout}" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>설명</title>
+
+</head>
+
+<body class="bg-gray-100">
+
+<div layout:fragment="content" class="container mx-auto my-8 p-8 bg-white rounded shadow-md">
+    <h1 class="text-3xl font-bold mb-4">회원 관리</h1>
+    <ul>
+        <li th:each="member : ${members}" class="flex">
+            <span th:text="${member.username}"></span>
+            <!-- 각 회원에 대한 고유한 ID를 동적으로 생성 -->
+            <form th:id="'membershipForm' + ${member.id}"  action="/adm/home/member/membership" method="POST"
+                  th:onchange="'submitForm(' + ${member.id} + ')'">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <input type="hidden" name="id" th:value="${member.id}">
+                <select class="membership-dropdown" name="membership">
+                    <option value="true" th:selected="${member.paid == true}">유료회원</option>
+                    <option value="false" th:selected="${member.paid == false}">일반회원</option>
+                </select>
+            </form>
+            <span th:text="${#temporals.format(member.createDate, 'yyyy.MM.dd')}"></span>
+        </li>
+    </ul>
+
+    <!-- 자바스크립트를 맨 아래에 두는 것이 좋습니다 -->
+    <script th:inline="javascript">
+        function submitForm(formId) {
+            document.getElementById("membershipForm"+formId).submit();
+        }
+    </script>
+</div>
+</body>
+</html>

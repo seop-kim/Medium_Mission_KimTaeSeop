@@ -1,0 +1,114 @@
+<html layout:decorate="~{global/usrLayout}">
+
+<head>
+    <title th:text="|글 ${post.id}번|"></title>
+</head>
+
+<body class="bg-gray-100">
+
+<div layout:fragment="content" class="container mx-auto mt-8">
+    <button class="bg-gray-300 text-gray-700 px-4 py-2 rounded-md mr-2" onclick="history.back();">뒤로가기</button>
+    <h1 class="text-3xl font-bold mb-6">글 내용</h1>
+
+    <div class="mb-4">
+        <h3 class="text-lg font-semibold">조회수</h3>
+        <div class="text-gray-600" th:text="${#numbers.formatInteger(post.hit, 3, 'COMMA')}"></div>
+    </div>
+
+    <div class="mb-4">
+        <h3 class="text-lg font-semibold">추천수</h3>
+        <div class="text-gray-600" th:text="${#numbers.formatInteger(post.likes.size, 3, 'COMMA')}"></div>
+    </div>
+
+    <div class="mb-4">
+        <h3 class="text-lg font-semibold">공개여부</h3>
+        <div class="text-gray-600" th:text="${post.published ? '공개' : '비공개'}"></div>
+    </div>
+
+    <div class="mb-4">
+        <h3 class="text-lg font-semibold">제목</h3>
+        <div class="text-gray-800 text-xl font-bold" th:text="${post.title}"></div>
+    </div>
+
+    <div class="mb-8" th:if="${post.paid and @rq.isMembership()}">
+        <h3 class="text-lg font-semibold">내용</h3>
+        <div class="text-gray-700 whitespace-pre-wrap" th:text="${post.body}"></div>
+    </div>
+
+    <div th:if="${post.paid and not @rq.isMembership()}">
+        <p>유료 회원 글 입니다</p>
+    </div>
+
+    <hr class="my-8">
+
+    <div class="mb-4" th:if="${post.paid and @rq.isMembership()}">
+        <a th:if="${@postService.canModify(@rq.member, post)}"
+           th:href="|/post/${post.id}/modify|"
+           class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300 mr-2">
+            글 수정
+        </a>
+
+        <a th:if="${@postService.canLike(@rq.member, post)}"
+           th:href="|/post/${post.id}/like|" method="POST"
+           class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 focus:outline-none focus:ring focus:border-green-300 mr-2">
+            추천
+        </a>
+
+        <a th:if="${@postService.canCancelLike(@rq.member, post)}"
+           th:href="|/post/${post.id}/cancelLike|" method="DELETE"
+           class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 focus:outline-none focus:ring focus:border-red-300 mr-2">
+            추천취소
+        </a>
+
+        <form style="display: inline-block;"
+              th:if="${@postService.canDelete(@rq.member, post)}"
+              th:action="|/post/${post.id}/delete|"
+              method="POST">
+            <input type="hidden" name="_method" value="DELETE">
+            <button class="bg-gray-700 text-white px-4 py-2 rounded-md hover:bg-gray-800 focus:outline-none focus:ring focus:border-gray-500 mr-2"
+                    onclick="return confirm('정말로 삭제하시겠습니까?');">글 삭제
+            </button>
+        </form>
+    </div>
+
+    <th:block th:if="${post.paid and @rq.isMembership()}">
+        <div class="mb-4">
+            <h3 class="text-lg font-semibold">댓글 작성</h3>
+            <form th:action="|/post/${post.id}/comment/write|" method="POST">
+                <textarea name="body" cols="30" rows="4" required maxlength="10000" placeholder="댓글"
+                          class="border p-2 rounded-md w-full focus:outline-none focus:ring focus:border-blue-300"></textarea>
+                <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300">
+                    댓글 작성
+                </button>
+            </form>
+        </div>
+    </th:block>
+
+    <div class="mb-4" th:if="${post.paid and @rq.isMembership()}">
+        <h3 class="text-lg font-semibold">댓글 목록</h3>
+        <ul class="list-disc ml-6 mt-4">
+            <li th:each="postComment : ${post.comments}" th:id="|postComment-${postComment.id}|"
+                class="mb-4">
+                <div>
+                    <div class="text-gray-600" th:text="${postComment.createDate}"></div>
+                    <div class="text-gray-800 font-semibold" th:text="${postComment.author.username}"></div>
+                    <div class="whitespace-pre-wrap" th:text="${postComment.body}"></div>
+                </div>
+
+                <div class="mt-2">
+                    <a th:if="${@postService.canModifyComment(@rq.member, postComment)}"
+                       th:href="|/post/${post.id}/comment/${postComment.id}/modify|"
+                       class="text-blue-500 hover:underline">댓글 수정</a>
+                    <a th:if="${@postService.canDeleteComment(@rq.member, postComment)}"
+                       th:href="|/post/${post.id}/comment/${postComment.id}/delete|" method="DELETE"
+                       onclick="return confirm('정말로 삭제하시겠습니까?');"
+                       class="text-red-500 hover:underline ml-4">댓글 삭제</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+</body>
+
+</html>
